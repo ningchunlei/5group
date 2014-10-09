@@ -47,6 +47,14 @@ class UserSocialAuth(models.Model, DjangoUserMixin):
             return None
 
     @classmethod
+    def get_social_auth__userid(cls, provider, user_id):
+        try:
+            return cls.objects.select_related('user').get(provider=provider,
+                                                          user_id=user_id)
+        except UserSocialAuth.DoesNotExist:
+            return None
+
+    @classmethod
     def username_max_length(cls):
         username_field = cls.username_field()
         field = UserSocialAuth.user_model()._meta.get_field(username_field)
@@ -59,6 +67,27 @@ class UserSocialAuth(models.Model, DjangoUserMixin):
             app_label, model_name = user_model.split('.')
             return models.get_model(app_label, model_name)
         return user_model
+
+    @classmethod
+    def allowed_to_disconnect(cls, user, backend_name, association_id=None):
+        qs = cls.objects.filter(provider=backend_name,user=user)
+        return qs.count() > 0
+
+    @classmethod
+    def disconnect(cls, entry):
+        if entry.extra_data.has_key("access_token"):
+            entry.extra_data.pop("access_token")
+            entry.save()
+
+    def __unicode__(self):
+        if self.extra_data.has_key("username"):
+             return self.extra_data["username"]
+        return ""
+
+    def __str__(self):
+        if self.extra_data.has_key("username"):
+             return self.extra_data["username"]
+        return ""
 
 
 class Nonce(models.Model, DjangoNonceMixin):

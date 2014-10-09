@@ -34,7 +34,11 @@ class QQOAuth2(BaseOAuth2):
     Storage = module_member(STORAGE)
 
     def __init__(self, strategy=None, redirect_uri=None):
-         super(QQOAuth2,self).__init__(QQOAuth2.Strategy(QQOAuth2.Storage()),redirect_uri)
+         request = None
+         if strategy != None:
+             redirect_uri = strategy.request.build_absolute_uri(redirect_uri)
+             request = strategy.request
+         super(QQOAuth2,self).__init__(QQOAuth2.Strategy(QQOAuth2.Storage(),request=request),redirect_uri)
 
     def get_user_details(self, response):
         return {
