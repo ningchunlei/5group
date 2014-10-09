@@ -8,6 +8,7 @@ class Community(models.Model):
     name = models.CharField(max_length=100)
     service = models.IntegerField(default=0)
     code = models.CharField(max_length=100)
+    number = models.CharField(max_length=100)
     time = models.DateTimeField(auto_now=True)
 
 class UserGroupProfile(models.Model):
