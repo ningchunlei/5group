@@ -21,6 +21,8 @@ class UserGroupProfile(models.Model):
 class Goods(models.Model):
     name = models.CharField(max_length=100)
     image = models.CharField(max_length=100)
+    link = models.CharField(max_length=100,default="")
+    paylink = models.CharField(max_length=100,default="")
     offprice = models.FloatField()
     price = models.FloatField()
     groupProfile = models.ForeignKey(UserGroupProfile)
