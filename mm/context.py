@@ -1,6 +1,7 @@
 from social.utils import setting_name, module_member
 from django.conf import settings
 from django.contrib.auth import logout as quit
+from models import UserGroupProfile
 
 STORAGE = getattr(settings, setting_name('STORAGE'),
                   'oauthdjango.models.DjangoStorage')
@@ -67,6 +68,15 @@ def auth(request):
     return {
         'socialuser':socialuser,
     }
+
+def userGroupProfile(request):
+     if hasattr(request, 'user') :
+         groupprofiles = UserGroupProfile.objects.select_related('community').filter(user=request.user)
+     else:
+         groupprofiles = []
+     return {
+         'groupprofiles':groupprofiles
+     }
 
 def logout(strategy, *args, **kwargs):
     quit(strategy.request)

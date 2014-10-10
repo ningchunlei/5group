@@ -8,13 +8,14 @@ class Community(models.Model):
     name = models.CharField(max_length=100)
     service = models.IntegerField(default=0)
     code = models.CharField(max_length=100)
-    number = models.CharField(max_length=100)
+    number = models.CharField(max_length=100,default="",unique=True)
     time = models.DateTimeField(auto_now=True)
+
 
 class UserGroupProfile(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     community = models.ForeignKey(Community)
-    nick = models.CharField(max_length=60)
+    nick = models.CharField(max_length=60,unique=True)
     time = models.DateTimeField(auto_now=True)
 
 class Goods(models.Model):
@@ -37,7 +38,6 @@ class GoodsCategory(models.Model):
 class CategoryValue(models.Model):
     value = models.CharField(max_length=100)
     category = models.ForeignKey(Category)
-    description = models.CharField(max_length=100)
     time = models.DateTimeField(auto_now=True)
 
 

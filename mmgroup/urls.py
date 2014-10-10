@@ -10,6 +10,6 @@ urlpatterns = [
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
-    url(r'',include(mmurls)),
+    url(r'',include('mm.urls',namespace='mm',app_name='mm')),
     url(r'', include('social.apps.django_app.urls', namespace='social'))
 ]
