@@ -2,7 +2,7 @@
 
 from django.shortcuts import render,render_to_response
 from django.contrib.auth.decorators import login_required
-from models import Community,UserGroupProfile
+from models import Community,UserGroupProfile,Goods,GoodsCategory,Category,CategoryValue
 from django.http import HttpResponse,HttpResponseBadRequest,HttpResponseRedirect
 import json
 from uuid import uuid4
@@ -62,6 +62,10 @@ def addgoods(request,communityId):
     community = Community.objects.get(number=communityId)
     group = UserGroupProfile.objects.select_related('community').filter(user=request.user,community=community)[0]
     return render(request, 'goods-add.html',{'request':request,'group':group})
+
+def savegoods(request):
+    params = request.POST;
+    goods = Goods()
 
 
 
