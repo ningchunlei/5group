@@ -7,4 +7,6 @@ urlpatterns = patterns('mm.views',
     url(r'^community/check/$', 'checkCommunityNumber',name='checkCommunityNumber'),
     url(r'^community/id/(?P<communityId>[^/]+)/$', 'usergroup',name='usergroup'),
     url(r'^goods/add/(?P<communityId>[^/]+)/$', 'addgoods',name='addgoods'),
+    url(r'^goods/save/$', 'savegoods',name='savegoods'),
+    url(r'^goods/detail/(?P<goodsId>[^/]+)/$', 'detailGoods',name='detailGoods'),
 )

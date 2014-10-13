@@ -62,10 +62,10 @@
             <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav side-nav">
-                    <li class="active">
+                    <li {% if history %} class="active" {% endif %}>
                         <a href="index.html"><i class="fa fa-fw fa-star"></i>Z</a>
                     </li>
-                    <li>
+                    <li {% if communityId %} class="active" {% endif %}>
                         <a href="javascript:;" data-toggle="collapse" data-target="#qqsidebar"><i class="fa fa-fw fa-group"></i> Q <i class="fa fa-fw fa-caret-down"></i></a>
                         <ul id="qqsidebar" class="collapse in">
                             {% for profile in groupprofiles %}

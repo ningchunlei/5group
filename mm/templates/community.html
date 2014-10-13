@@ -15,7 +15,41 @@
                             </li>
                         </ol>
                     </div>
+                </div>
 
+                 <div class="row">
+                    <div class="col-lg-12">
+                        <h2>Doing</h2>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Price</th>
+                                        <th>Sale</th>
+                                        <th>People</th>
+                                        <th>Time</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for gd in doingGoods %}
+                                        <tr>
+                                            <td>{{ gd.name }}</td>
+                                            <td>{{ gd.price }}</td>
+                                            <td>{{ gd.offprice }}</td>
+                                            <td>{{ gd.groupProfile.nick }}</td>
+                                            <td>{{ gd.time }}</td>
+                                            <td><a href="{% url 'mm:detailGoods' gd.id%}">go</a></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
                     <div class="col-lg-12">
                         <h2>History</h2>
                         <div class="table-responsive">
@@ -30,7 +64,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for gd in history_goods %}
+                                    {% for gd in historyGoods %}
                                         <tr>
                                             <td>{{ gd.name }}</td>
                                             <td>{{ gd.price }}</td>
@@ -43,6 +77,5 @@
                             </table>
                         </div>
                     </div>
-
                 </div>
 {% endblock %}

@@ -70,13 +70,17 @@ def auth(request):
     }
 
 def userGroupProfile(request):
-     if hasattr(request, 'user') :
-         groupprofiles = UserGroupProfile.objects.select_related('community').filter(user=request.user)
-     else:
-         groupprofiles = []
-     return {
-         'groupprofiles':groupprofiles
-     }
+    groupprofiles = []
+    if hasattr(request, 'user') :
+        try:
+            groupprofiles = UserGroupProfile.objects.select_related('community').filter(user=request.user)
+        except:
+             groupprofiles = []
+    else:
+        groupprofiles = []
+    return {
+     'groupprofiles':groupprofiles
+    }
 
 def logout(strategy, *args, **kwargs):
     quit(strategy.request)

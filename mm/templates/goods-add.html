@@ -21,9 +21,9 @@
 
                     </div>
                     <div class="col-lg-9">
-                           <form id="goods-form" method="post" action="/goods/save/" class="form-horizontal">
+                           <form id="order-form" method="post" action="/goods/save/" class="form-horizontal">
                                 {% csrf_token %}
-                                <input type="hidden" name="groupid" value="{{ group.community.number }}"/>
+                                <input type="hidden" name="communityId" value="{{ group.community.number }}"/>
                                 <div class="form-group">
                                     <label class="col-md-2 control-label">Image Link</label>
                                     <div class="col-md-5">
