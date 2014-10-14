@@ -2,15 +2,16 @@
 
 from django.shortcuts import render,render_to_response
 from django.contrib.auth.decorators import login_required
-from models import Community,UserGroupProfile,Goods,GoodsCategory,Category,CategoryValue
+from models import Community,UserGroupProfile,Goods,GoodsCategory,Category,CategoryValue,Orders,OrderCategory
 from django.http import HttpResponse,HttpResponseBadRequest,HttpResponseRedirect
 import json
 from uuid import uuid4
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.views.decorators.http import require_POST
 from django.db import transaction
-from utils import isEmpty
+from utils import isEmpty,combination,CountObj
 from django.core.urlresolvers import reverse
+import re
 # Create your views here.
 
 
@@ -104,9 +105,89 @@ def detailGoods(request,goodsId):
     for gdc in gdCategorys:
         gdc.categoryValues = CategoryValue.objects.filter(category=gdc.category)
     group = UserGroupProfile.objects.select_related('community').filter(user=request.user,community=gd.community)[0]
-    return render(request, 'detail.html',{'request':request,'group':group,'goods':gd,"categorys":gdCategorys})
+    orders = Orders.objects.select_related('goods').filter(goods=Goods(id=goodsId))
+    for order in orders :
+        order.categorys = OrderCategory.objects.select_related('categoryValue').filter(order=order)
+    return render(request, 'detail.html',{'request':request,'group':group,'goods':gd,"categorys":gdCategorys,'orderGoods':orders})
+
+@transaction.atomic
+def order(request,communityId,goodsId):
+    params = request.POST;
+    gd = Goods.objects.select_related('community','groupProfile').filter(id=goodsId)[0]
+    group = UserGroupProfile.objects.select_related('community').filter(user=request.user,community=gd.community)[0]
+    order = Orders()
+    order.groupProfile=group
+    order.goods=Goods(id=goodsId)
+    order.number=int(params["number"])
+    order.save()
+
+    gdCategorys = GoodsCategory.objects.select_related('category').filter(product=order.goods)
+    for gdc in gdCategorys:
+        oc = OrderCategory();
+        oc.order=order
+        oc.categoryValue = CategoryValue(id=int(params["ct"+str(gdc.category.id)]))
+        oc.save()
+
+    return HttpResponseRedirect(redirect_to=reverse("mm:detailGoods",args=[goodsId]))
 
 
+def deleteOrder(request,orderId):
+    params = request.POST;
+    order = Orders.objects.get(id=orderId)
+    order.delete()
+    OrderCategory.objects.filter(order=Orders(id=orderId)).delete()
+    return HttpResponseRedirect(redirect_to=reverse("mm:detailGoods",args=[order.goods.id]))
+
+def statisticsOrder(request,goodsId):
+    params = request.POST
+    xValues=params.getlist("x")
+    yValues=params.getlist("y")
+    xValues=map(lambda x:int(x),xValues)
+    yValues=map(lambda x:int(x),yValues)
+
+    xValues=sorted(xValues)
+    yValues=sorted(yValues)
+
+    orders = Orders.objects.select_related('goods','groupProfile').filter(goods=Goods(id=goodsId))
+    hMap = {}
+    p = re.compile(r'^-')
+    for order in orders :
+        order.categorys = OrderCategory.objects.select_related('categoryValue').filter(order=order)
+        xv = ""
+        for x in xValues:
+            for oc in order.categorys:
+                if int(x) == oc.categoryValue.category.id:
+                    xv = xv+"-"+oc.categoryValue.value
+        yv= ""
+        for y in yValues:
+            for oc in order.categorys:
+                if int(y) == oc.categoryValue.category.id:
+                    yv = yv + "-" + oc.categoryValue.value
+
+        xv = p.sub("",xv)
+        yv = p.sub("",yv)
+        if not hMap.has_key(yv):
+            hMap.setdefault(yv,{})
+        if not hMap[yv].has_key(xv):
+            hMap[yv].setdefault(xv,[])
+        hMap[yv][xv].append(order)
+
+    xCategory=[]
+    yCategory=[]
+    gdCategorys = GoodsCategory.objects.select_related('category').filter(product=Goods(id=goodsId)).order_by('category')
+    for gdc in gdCategorys:
+        gdc.categoryValues = CategoryValue.objects.filter(category=gdc.category)
+        if gdc.category.id in xValues:
+            xCategory.append(gdc.categoryValues)
+        if gdc.category.id in yValues:
+            yCategory.append(gdc.categoryValues)
+
+    xAxis = combination(xCategory,0);
+    yAxis = combination(yCategory,0)
+
+    gd = Goods.objects.get(id=goodsId)
+
+    return render(request, 'statistics.html',{'request':request,'group':gd.groupProfile,'goods':gd,"categorys":gdCategorys,"xAxis":xAxis,"yAxis":yAxis,'x_axis':xValues,'y_axis':yValues,'hMap':hMap,'count':CountObj(0)})
 
 
 

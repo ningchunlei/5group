@@ -48,4 +48,10 @@ class CategoryValue(models.Model):
 class Orders(models.Model):
     groupProfile = models.ForeignKey(UserGroupProfile)
     goods = models.ForeignKey(Goods)
+    number = models.IntegerField(default=0)
+    time = models.DateTimeField(auto_now=True)
+
+class OrderCategory(models.Model):
+    order = models.ForeignKey(Orders)
+    categoryValue = models.ForeignKey(CategoryValue)
     time = models.DateTimeField(auto_now=True)

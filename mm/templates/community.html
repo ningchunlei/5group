@@ -40,7 +40,7 @@
                                             <td>{{ gd.offprice }}</td>
                                             <td>{{ gd.groupProfile.nick }}</td>
                                             <td>{{ gd.time }}</td>
-                                            <td><a href="{% url 'mm:detailGoods' gd.id%}">go</a></td>
+                                            <td><a href="{% url 'mm:detailGoods' gd.id%}">go</a> | <a href="{% url 'mm:statisticsOrder' gd.id%}">statistics</a></td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
