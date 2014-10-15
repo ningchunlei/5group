@@ -123,7 +123,7 @@
                                 </div>
                               </div>
                               <div class="card-action-pellet btn-toolbar pull-right" role="toolbar">
-                                   <a href="#add_group_dialog"  class="community"  data-id="{{ g.id }}"> <div class="btn-group fa fa-plus"></div></a>
+                                   <a href="#"  class="community"  data-id="{{ g.id }}"> <div class="btn-group fa fa-plus"></div></a>
                               </div>
                         </div>
                         {% endfor %}
@@ -171,18 +171,8 @@
             $(".community").click(function(){ // Click to only happen on announce links
                 $('#community-form').attr('action', "/community/join/"+$(this).data('id')); //this fails silently
                 $('#community-form').get(0).setAttribute('action',"/community/join/"+$(this).data('id')); //this works
-                $('#community-form').bootstrapValidator('updateOption', "nick",{
-                         validators: {
-                            notEmpty: {
-                                message: '不能为空'
-                            },
-                            remote: {
-                                message: '昵称存在了',
-                                url: '/community/'+$(this).data('id')+'/check/'
-                            }
-                        }
-                });
-                 $('#add_group_dialog').modal('show');
+                $('#community-form').bootstrapValidator('updateOption', "nick",'remote','url','/community/'+$(this).data('id')+'/check/');
+                $('#add_group_dialog').modal('show');
             });
 
             $('#community-form').bootstrapValidator({
@@ -200,6 +190,7 @@
                         }
                     },
                     nick :{
+                        trigger: 'blur',
                         validators: {
                             notEmpty: {
                                 message: '不能为空'
