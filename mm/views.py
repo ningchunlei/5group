@@ -14,10 +14,17 @@ from django.core.urlresolvers import reverse
 import re
 # Create your views here.
 
-
-
 def index(request):
-    return render(request, 'index.html', {'request':request})
+    communitys = Community.objects.select_related('user').all()
+    for x in communitys:
+        x.user.socialUser = x.user.social_auth.model.objects.get(user=x.user)
+        x.user.groupProfile = UserGroupProfile.objects.get(user=x.user,community=x)
+    return render(request, 'index.html', {'request':request,'communitys':communitys})
+
+@login_required(redirect_field_name=None,login_url="/login")
+@transaction.atomic
+def join(request):
+    pass
 
 @login_required(redirect_field_name=None,login_url="/")
 def manage(request):

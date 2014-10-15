@@ -79,6 +79,9 @@ class UserSocialAuth(models.Model, DjangoUserMixin):
             entry.extra_data.pop("access_token")
             entry.save()
 
+    def getImage(self):
+        return self.extra_data.get('profile_image_url')
+
     def __unicode__(self):
         if self.extra_data.has_key("username"):
              return self.extra_data["username"]
