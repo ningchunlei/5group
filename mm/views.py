@@ -21,16 +21,37 @@ def index(request):
         x.user.groupProfile = UserGroupProfile.objects.get(user=x.user,community=x)
     return render(request, 'index.html', {'request':request,'communitys':communitys})
 
+def login(request):
+    return render(request, 'login.html', {'request':request})
+
 @login_required(redirect_field_name=None,login_url="/login")
 @transaction.atomic
-def join(request):
-    pass
+def join(request,communityId):
+    nick = request.POST['nick']
+    code = request.POST['code']
 
-@login_required(redirect_field_name=None,login_url="/")
+    if Community.objects.filter(id=communityId,code=code).count()==1:
+        groupProfile = UserGroupProfile()
+        groupProfile.user=request.user
+        groupProfile.community=Community(id=communityId)
+        groupProfile.nick= nick
+        groupProfile.save()
+        return HttpResponseRedirect(redirect_to=reverse("mm:manage"))
+    return HttpResponseRedirect(redirect_to=reverse("mm:index"))
+
+
+def checknick(request,communityId):
+    rs = UserGroupProfile.objects.filter(community=Community(id=communityId),nick=request.GET['nick']).count()
+    if rs > 0 :
+        return HttpResponse(json.dumps({ "valid": False }),content_type='application/json; charset=utf8')
+    else:
+        return HttpResponse(json.dumps({ "valid": True }),content_type='application/json; charset=utf8')
+
+@login_required(redirect_field_name=None,login_url="/login")
 def manage(request):
     return render(request, 'manage.html', {'request':request})
 
-@login_required(redirect_field_name=None,login_url="/")
+@login_required(redirect_field_name=None,login_url="/login")
 @require_POST
 @csrf_protect
 @transaction.atomic

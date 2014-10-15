@@ -53,7 +53,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'mmgroup.urls'
 
 WSGI_APPLICATION = 'mmgroup.wsgi.application'
-
+APPEND_SLASH=False
 
 # Database
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
