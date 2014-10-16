@@ -16,4 +16,8 @@ urlpatterns = patterns('mm.views',
     url(r'^community/(?P<communityId>[^/]+)/check[/]*$', 'checknick',name='checknick'),
     url(r'^community/join/(?P<communityId>[^/]+)[/]*$', 'join',name='join'),
     url(r'^login[/]*$', 'login',name='login'),
+    url(r'^user/check[/]*$', 'userCheck',name='userCheck'),
+    url(r'^user/modify[/]*$', 'userModify',name='userModify'),
+    url(r'^user/register[/]*$', 'register',name='register'),
+    url(r'^user/login[/]*$', 'userLogin',name='userLogin'),
 )

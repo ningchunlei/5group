@@ -60,9 +60,12 @@ def auth(request):
     If there is no 'user' attribute in the request, uses AnonymousUser (from
     django.contrib.auth).
     """
-    if hasattr(request, 'user') and request.session.has_key("social_auth_last_login_backend"):
+    if hasattr(request, 'user') and request.user.is_authenticated():
         user = request.user
-        socialuser = Storage.user.get_social_auth__userid(request.session["social_auth_last_login_backend"],user.id);
+        if not request.session.has_key("social_auth_last_login_backend"):
+            socialuser = Storage.user.get_social_auth__userid("qq",user.id);
+        else:
+            socialuser = Storage.user.get_social_auth__userid(request.session["social_auth_last_login_backend"],user.id);
     else:
         socialuser = None
     return {

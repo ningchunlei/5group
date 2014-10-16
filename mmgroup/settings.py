@@ -150,7 +150,6 @@ SOCIAL_AUTH_PIPELINE = (
     'mm.pipeline.get_username',
     'mm.pipeline.create_user',
     'social.pipeline.social_auth.associate_user',
-    'social.pipeline.debug.debug',
     'social.pipeline.social_auth.load_extra_data',
     'mm.pipeline.user_details',
     #'social.pipeline.debug.debug'

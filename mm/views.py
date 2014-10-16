@@ -11,6 +11,8 @@ from django.views.decorators.http import require_POST
 from django.db import transaction
 from utils import isEmpty,combination,CountObj
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login as authLogin
 import re
 # Create your views here.
 
@@ -23,6 +25,34 @@ def index(request):
 
 def login(request):
     return render(request, 'login.html', {'request':request})
+
+def userCheck(request):
+    rs = User.objects.filter(username=request.GET['name']).count()
+    if rs > 0 :
+        return HttpResponse(json.dumps({ "valid": False }),content_type='application/json; charset=utf8')
+    else:
+        return HttpResponse(json.dumps({ "valid": True }),content_type='application/json; charset=utf8')
+
+def userLogin(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        if user.is_active:
+            authLogin(request, user)
+            return HttpResponseRedirect(redirect_to=reverse("mm:manage"))
+        else:
+            return HttpResponseRedirect(redirect_to=reverse("mm:index"))
+    else:
+        return HttpResponseRedirect(redirect_to=reverse("mm:index"))
+
+@login_required(redirect_field_name=None,login_url="/login")
+def userModify(request):
+    user = User.objects.get(id=request.user.id)
+    user.set_password(request.POST['passwd'])
+    user.username = request.POST['name']
+    user.save()
+    return index(request)
 
 @login_required(redirect_field_name=None,login_url="/login")
 @transaction.atomic
@@ -48,7 +78,13 @@ def checknick(request,communityId):
         return HttpResponse(json.dumps({ "valid": True }),content_type='application/json; charset=utf8')
 
 @login_required(redirect_field_name=None,login_url="/login")
+def register(request):
+    return render(request, 'register.html', {'request':request})
+
+@login_required(redirect_field_name=None,login_url="/login")
 def manage(request):
+    if request.session.has_key('is_new') and request.session.pop('is_new') :
+        return HttpResponseRedirect(redirect_to=reverse("mm:register"))
     return render(request, 'manage.html', {'request':request})
 
 @login_required(redirect_field_name=None,login_url="/login")

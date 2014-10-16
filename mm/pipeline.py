@@ -57,6 +57,7 @@ def create_user(strategy, details, user=None, *args, **kwargs):
                                                       USER_FIELDS))
     if not fields:
         return
+    strategy.session_set("is_new",True)
 
     return {
         'is_new': True,
