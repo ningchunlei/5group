@@ -30,7 +30,7 @@ def join(request,communityId):
     nick = request.POST['nick']
     code = request.POST['code']
 
-    if Community.objects.filter(id=communityId,code=code).count()==1:
+    if Community.objects.filter(id=communityId,code=code).count()==1 and Community.objects.filter(id=communityId,user=request.user).count()==0:
         groupProfile = UserGroupProfile()
         groupProfile.user=request.user
         groupProfile.community=Community(id=communityId)
@@ -83,18 +83,21 @@ def checkCommunityNumber(request):
         return HttpResponse(json.dumps({ "valid": False }),content_type='application/json; charset=utf8')
     return HttpResponse(json.dumps({ "valid": True }),content_type='application/json; charset=utf8')
 
+@login_required(redirect_field_name=None,login_url="/login")
 def usergroup(request,communityId):
     community = Community.objects.get(number=communityId)
-    group = UserGroupProfile.objects.select_related('community').filter(user=request.user,community=community)[0]
+    group = UserGroupProfile.objects.select_related('community').filter(user=request.user.is_authenticated(),community=community)[0]
     doingGoods = Goods.objects.select_related('community').filter(status=0,community=community);
     historyGoods = Goods.objects.select_related('community').filter(status=1,community=community);
     return render(request, 'community.html', {'request':request,'group':group,"communityId":communityId,"doingGoods":doingGoods,"historyGoods":historyGoods})
 
+@login_required(redirect_field_name=None,login_url="/login")
 def addgoods(request,communityId):
     community = Community.objects.get(number=communityId)
     group = UserGroupProfile.objects.select_related('community').filter(user=request.user,community=community)[0]
     return render(request, 'goods-add.html',{'request':request,'group':group,"communityId":communityId})
 
+@login_required(redirect_field_name=None,login_url="/login")
 @transaction.atomic
 def savegoods(request):
     params = request.POST;
@@ -126,6 +129,7 @@ def savegoods(request):
         gc.save()
     return HttpResponseRedirect(redirect_to=reverse("mm:usergroup",args=[params["communityId"]]))
 
+@login_required(redirect_field_name=None,login_url="/login")
 def detailGoods(request,goodsId):
     params = request.POST;
     gd = Goods.objects.select_related('community','groupProfile').filter(id=goodsId)[0]
@@ -138,6 +142,7 @@ def detailGoods(request,goodsId):
         order.categorys = OrderCategory.objects.select_related('categoryValue').filter(order=order)
     return render(request, 'detail.html',{'request':request,'group':group,'goods':gd,"categorys":gdCategorys,'orderGoods':orders})
 
+@login_required(redirect_field_name=None,login_url="/login")
 @transaction.atomic
 def order(request,communityId,goodsId):
     params = request.POST;
@@ -158,14 +163,18 @@ def order(request,communityId,goodsId):
 
     return HttpResponseRedirect(redirect_to=reverse("mm:detailGoods",args=[goodsId]))
 
-
+@login_required(redirect_field_name=None,login_url="/login")
 def deleteOrder(request,orderId):
     params = request.POST;
     order = Orders.objects.get(id=orderId)
+    if request.user.id != order.groupProfile.user.id:
+         return HttpResponseRedirect(redirect_to=reverse("mm:index"))
     order.delete()
     OrderCategory.objects.filter(order=Orders(id=orderId)).delete()
     return HttpResponseRedirect(redirect_to=reverse("mm:detailGoods",args=[order.goods.id]))
 
+
+@login_required(redirect_field_name=None,login_url="/login")
 def statisticsOrder(request,goodsId):
     params = request.POST
     xValues=params.getlist("x")
@@ -175,6 +184,9 @@ def statisticsOrder(request,goodsId):
 
     xValues=sorted(xValues)
     yValues=sorted(yValues)
+
+    gd = Goods.objects.get(id=goodsId)
+    group = UserGroupProfile.objects.get(user=request.user,community=gd.community)
 
     orders = Orders.objects.select_related('goods','groupProfile').filter(goods=Goods(id=goodsId))
     hMap = {}
@@ -213,9 +225,9 @@ def statisticsOrder(request,goodsId):
     xAxis = combination(xCategory,0);
     yAxis = combination(yCategory,0)
 
-    gd = Goods.objects.get(id=goodsId)
 
-    return render(request, 'statistics.html',{'request':request,'group':gd.groupProfile,'goods':gd,"categorys":gdCategorys,"xAxis":xAxis,"yAxis":yAxis,'x_axis':xValues,'y_axis':yValues,'hMap':hMap,'count':CountObj(0)})
+
+    return render(request, 'statistics.html',{'request':request,'group':group,'goods':gd,"categorys":gdCategorys,"xAxis":xAxis,"yAxis":yAxis,'x_axis':xValues,'y_axis':yValues,'hMap':hMap,'count':CountObj(0)})
 
 
 

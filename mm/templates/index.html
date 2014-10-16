@@ -26,8 +26,8 @@
           background: repeating-linear-gradient(45deg, #606dbc, #606dbc 10px, #465298 10px, #465298 20px);
         }
         .block-update-card .update-card-MDimentions {
-          width: 80px;
-          height: 80px;
+          width: 40px;
+          height: 40px;
         }
         .block-update-card .update-card-body {
           margin-top: 10px;
@@ -117,9 +117,10 @@
                                 <img class="media-object update-card-MDimentions" src="{{ g.user.socialUser.getImage }}" alt="...">
                               </a>
                               <div class="media-body update-card-body">
-                                <h4 class="media-heading">{{ g.user.groupProfile.nick }}</h4>
-                                <div class="btn-toolbar card-body-social" role="toolbar">
-                                  <div class="btn-group">{{ g.number }}</div>
+                                <h4 class="media-heading">群主：{{ g.user.groupProfile.nick }}</h4>
+                                <h4 class="media-heading">群名称：{{ g.name }}</h4>
+                                <div class="btn-toolbar" role="toolbar">
+                                  <div class="btn-group"><h4 class="media-heading">群QQ号:{{ g.number }}</h4></div>
                                 </div>
                               </div>
                               <div class="card-action-pellet btn-toolbar pull-right" role="toolbar">
@@ -135,7 +136,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="add_group_dialog_label">Join Group</h4>
+            <h4 class="modal-title" id="add_group_dialog_label">加入群</h4>
           </div>
           <div class="modal-body">
             <form id="community-form" method="post" action="/community/join/" class="form-horizontal">

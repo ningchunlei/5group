@@ -43,14 +43,31 @@
             <ul class="nav top-nav">
                 <li><a href="/">Group</a></li>
                 <li><a href="#">Latest</a></li>
-                {% if request.user %}<li><a href="/manage">Manage</a></li>{% endif %}
+                {% if request.user.is_authenticated %}<li><a href="/manage">Manage</a></li>{% endif %}
                 <li class="dropdown navbar-right">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> 登录 <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="/login/qq/"><img src="/static/img/qq.png"/>登录</a>
-                        </li>
-                    </ul>
+                    {% if request.user.is_authenticated %}
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{ socialuser }} <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="#"><i class="fa fa-fw fa-user"></i><img src="{{ socialuser.getImage }}"/></a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <form id="logout-form" action="/disconnect/{{socialuser.provider }}/" method="post">
+                                        {% csrf_token %}
+                                    </form>
+                                    <a href="#" id="logout-link"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+                                </li>
+                            </ul>
+                    {% else %}
+                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> 登录 <b class="caret"></b></a>
+                         <ul class="dropdown-menu">
+                                <li>
+                                    <a href="/login/qq/"><img src="/static/img/qq.png"/>登录</a>
+                                </li>
+                         </ul>
+                    {% endif %}
+
                 </li>
             </ul>
             <!-- /.navbar-collapse -->
