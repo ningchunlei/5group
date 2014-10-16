@@ -89,6 +89,8 @@ STATICFILES_DIRS = (
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
 
+STATIC_ROOT = "/www/5group/static/"
+
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),
 )
