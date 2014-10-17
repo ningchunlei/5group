@@ -16,6 +16,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as authLogin
 import re
 from django.conf import settings
+import  shutil
 # Create your views here.
 
 def index(request):
@@ -168,6 +169,7 @@ def savegoods(request):
     goods.link = params["link"]
     goods.price = float(params["price"])
     goods.offprice = float(params["sale"])
+    goods.desc = params['desc']
     goods.community = community
     goods.save()
     indexs = params.getlist("categoryIndex")
@@ -185,6 +187,7 @@ def savegoods(request):
         gc.category = category
         gc.product = goods
         gc.save()
+    shutil.move("/www/tmp/"+params["image"],"/www/image/"+params["image"])
     return HttpResponseRedirect(redirect_to=reverse("mm:usergroup",args=[params["communityId"]]))
 
 @login_required(redirect_field_name=None,login_url="/login")

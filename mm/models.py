@@ -28,6 +28,7 @@ class Goods(models.Model):
     offprice = models.FloatField()
     price = models.FloatField()
     groupProfile = models.ForeignKey(UserGroupProfile)
+    desc = models.CharField(max_length=200,default="")
     community = models.ForeignKey(Community,default=0)
     time = models.DateTimeField(auto_now=True)
     status = models.IntegerField(default=0)
