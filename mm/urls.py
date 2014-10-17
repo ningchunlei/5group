@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, url
+from django.conf import settings
 
 urlpatterns = patterns('mm.views',
     url(r'^$', 'index',name='index'),
@@ -20,4 +21,10 @@ urlpatterns = patterns('mm.views',
     url(r'^user/modify[/]*$', 'userModify',name='userModify'),
     url(r'^user/register[/]*$', 'register',name='register'),
     url(r'^user/login[/]*$', 'userLogin',name='userLogin'),
+    url(r'^upload/image[/]*$', 'uploadImage',name='uploadImage'),
 )
+
+if settings.DEBUG:
+    urlpatterns += patterns('django.views.static',
+        (r'^media/(?P<path>.*)', 'serve', {'document_root': settings.MEDIA_ROOT}),
+    )

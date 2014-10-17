@@ -1,6 +1,32 @@
 {% extends "base.html" %}
-
 {% block title %}{{ request.user }}{% endblock %}
+{% block style %}
+    <style>
+.fileinput-button {
+  position: relative;
+  overflow: hidden;
+}
+.fileinput-button input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  opacity: 0;
+  -ms-filter: 'alpha(opacity=0)';
+  font-size: 200px;
+  direction: ltr;
+  cursor: pointer;
+}
+/* Fixes for IE < 8 */
+@media screen\9 {
+  .fileinput-button input {
+    filter: alpha(opacity=0);
+    font-size: 100%;
+    height: 100%;
+  }
+}
+</style>
+{% endblock %}
 
 {% block body %}
 <!-- Page Heading -->
@@ -17,18 +43,25 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-3">
+                    <div class="col-lg-3" id="imgview">
 
                     </div>
                     <div class="col-lg-9">
                            <form id="goods-form" method="post" action="/goods/save/" class="form-horizontal">
                                 {% csrf_token %}
                                 <input type="hidden" name="communityId" value="{{ group.community.number }}"/>
+
                                 <div class="form-group">
                                     <label class="col-md-2 control-label">Image Link</label>
                                     <div class="col-md-5">
                                         <input type="text" class="form-control" name="image" />
                                     </div>
+                                     <span class="btn btn-success fileinput-button">
+                                    <i class="glyphicon glyphicon-plus"></i>
+                                    <span>Add files...</span>
+                                    <!-- The file input field used as target for the file upload widget -->
+                                    <input id="fileupload" type="file" name="file" data-url="/upload/image/">
+                                </span>
                                 </div>
                                 <div class="form-group">
                                     <label class="col-md-2 control-label">Name</label>
@@ -121,6 +154,9 @@
 {% endblock %}
 
 {% block script %}
+    <script src="/static/js/vendor/jquery.ui.widget.js"></script>
+    <script src="/static/js/jquery.iframe-transport.js"></script>
+    <script src="/static/js/jquery.fileupload.js"></script>
     <script>
        var categoryCount = 0;
        $(document).ready(function() {
@@ -135,7 +171,7 @@
                     image: {
                         validators: {
                             notEmpty: {
-                                message: '图像链接'
+                                message: '图片链接'
                             }
                         }
                     },
@@ -215,6 +251,24 @@
                 // Remove element containing the option
                 $row.remove();
             });
+
+
+
         });
+
+        $(function () {
+            $('#fileupload').fileupload({
+            dataType: 'json',
+            done: function (e, data) {
+                if(!data.result.valid){
+                    alert('超过最大限制');
+                }else{
+                    $('#goods-form input[name="image"]').val(data.result.url);
+                    $('#imgview').empty()
+                    $('#imgview').append('<span style="float:right"><img width="150px" src="'+data.result.url+'"/></span>')
+                }
+            }
+        });
+});
     </script>
 {% endblock %}

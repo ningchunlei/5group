@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from models import Community,UserGroupProfile,Goods,GoodsCategory,Category,CategoryValue,Orders,OrderCategory
 from django.http import HttpResponse,HttpResponseBadRequest,HttpResponseRedirect
 import json
+import os
 from uuid import uuid4
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.views.decorators.http import require_POST
@@ -14,6 +15,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as authLogin
 import re
+from django.conf import settings
 # Create your views here.
 
 def index(request):
@@ -45,6 +47,26 @@ def userLogin(request):
             return HttpResponseRedirect(redirect_to=reverse("mm:index"))
     else:
         return HttpResponseRedirect(redirect_to=reverse("mm:index"))
+
+@login_required(redirect_field_name=None,login_url="/login")
+def uploadImage(request):
+    uploadfile  = request.FILES['file']
+    print
+    if uploadfile.size > settings.MAX_FILEUPLOAD_SIZE:
+         return HttpResponse(json.dumps({ "valid": False }),content_type='application/json; charset=utf8')
+    imgPattern = re.compile(r'^image/')
+    imgType=re.sub(imgPattern,'',uploadfile.content_type)
+    uploadfile.open()
+    urlPath = "%s/%s.%s" % (request.user.id,uuid4().hex,imgType)
+    try:
+        os.makedirs("/www/tmp/%s" % (request.user.id))
+    except:
+        pass
+    with open('/www/tmp/%s' % urlPath,'wb+') as ff:
+        for chunk in uploadfile.chunks():
+            ff.write(chunk)
+    return HttpResponse(json.dumps({ "url": "/media/"+urlPath ,'valid':True}),content_type='application/json; charset=utf8')
+
 
 @login_required(redirect_field_name=None,login_url="/login")
 def userModify(request):

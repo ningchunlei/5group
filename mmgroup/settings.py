@@ -91,6 +91,10 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = "/www/5group/static/"
 
+MEDIA_ROOT = '/www/tmp'
+
+MEDIA_URL = '/media/'
+
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),
 )
@@ -172,3 +176,11 @@ SOCIAL_AUTH_DISCONNECT_PIPELINE = (
 
 SOCIAL_AUTH_QQ_KEY = '101162022'
 SOCIAL_AUTH_QQ_SECRET = '59176997be38f1bf671bec55cf86be7c'
+
+FILE_UPLOAD_HANDLERS = ("mm.filehandler.MMFileUploadHandler",
+ "django.core.files.uploadhandler.TemporaryFileUploadHandler")
+
+MAX_FILEUPLOAD_SIZE=100000
+
+
+
