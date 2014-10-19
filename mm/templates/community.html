@@ -7,11 +7,11 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h1 class="page-header">
-                          <small> Group:{{ group.community.name }} <a href="{% url 'mm:addgoods' group.community.number %}"><i class="fa fa-plus-square"> Add Goods </i></a></small>
+                          <small> 群名:{{ group.community.name }} <a href="{% url 'mm:addgoods' group.community.number %}"><i class="fa fa-plus-square"> 添加商品 </i></a>   <a href="#add_group_dialog" data-toggle="modal" data-target="#add_group_dialog"><i class="fa fa-plus-square"> 修改昵称 </i></a></small>
                         </h1>
                         <ol class="breadcrumb">
                             <li class="active">
-                                <i class="fa fa-info"></i> GroupId: {{ group.community.number }} Code: {{ group.community.code }}
+                                <i class="fa fa-info"></i> 群号: {{ group.community.number }} 暗号: {{ group.community.code }}
                             </li>
                         </ol>
                     </div>
@@ -19,16 +19,16 @@
 
                  <div class="row">
                     <div class="col-lg-12">
-                        <h2>Doing</h2>
+                        <h2>团品进行时</h2>
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Price</th>
-                                        <th>Sale</th>
-                                        <th>People</th>
-                                        <th>Time</th>
+                                        <th>商品名称</th>
+                                        <th>原价</th>
+                                        <th>团价</th>
+                                        <th>发起人</th>
+                                        <th>发起时间</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -40,7 +40,7 @@
                                             <td>{{ gd.offprice }}</td>
                                             <td>{{ gd.groupProfile.nick }}</td>
                                             <td>{{ gd.time }}</td>
-                                            <td><a href="{% url 'mm:detailGoods' gd.id%}">go</a> | <a href="{% url 'mm:statisticsOrder' gd.id%}">statistics</a></td>
+                                            <td><a href="{% url 'mm:detailGoods' gd.id%}">去看看</a> | <a href="{% url 'mm:statisticsOrder' gd.id%}">统计</a> {% if gd.community.user.id == request.user.id or gd.groupProfile.user.id == request.user.id %}| <a href="{% url 'mm:freeze' gd.id%}">结束</a>{% endif %}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -51,16 +51,16 @@
 
                 <div class="row">
                     <div class="col-lg-12">
-                        <h2>History</h2>
+                        <h2>团历史</h2>
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Price</th>
-                                        <th>Sale</th>
-                                        <th>People</th>
-                                        <th>Time</th>
+                                       <th>商品名称</th>
+                                        <th>原价</th>
+                                        <th>团价</th>
+                                        <th>发起人</th>
+                                        <th>发起时间</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -78,4 +78,82 @@
                         </div>
                     </div>
                 </div>
+
+
+     <div class="modal fade" id="add_group_dialog" tabindex="-1" role="dialog" aria-labelledby="add_group_dialog_label" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="add_group_dialog_label">修改昵称</h4>
+          </div>
+          <div class="modal-body">
+            <form id="community-form" method="post" action="/community/modify/nick/" class="form-horizontal">
+                {% csrf_token %}
+                <input type="hidden" name="communityId" value="{{group.community.id }}"/>
+                <div class="form-group">
+                    <label class="col-md-3 control-label">群昵称</label>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" name="nick" value="{{ group.nick }}"/>
+                    </div>
+                </div>
+
+                 <div class="form-group">
+                    <div class="col-md-5 col-md-offset-3">
+                        <button type="submit" class="btn btn-default">保存</button>
+                    </div>
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
+
+
+{% block script %}
+    <script>
+       var categoryCount = 0;
+       $(document).ready(function() {
+        $('#community-form')
+            .bootstrapValidator({
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    nick: {
+                        validators: {
+                            notEmpty: {
+                                message: ''
+                            },
+                             remote: {
+                                message: '群昵称存在了',
+                                url: '/community/{{ group.community.id }}/check'
+                            }
+                        }
+                    }
+                }
+            }).on('success.form.bv', function(e) {
+            // Prevent form submission
+                e.preventDefault();
+
+                // Get the form instance
+                var $form = $(e.target);
+
+                // Get the BootstrapValidator instance
+                var bv = $form.data('bootstrapValidator');
+
+                // Use Ajax to submit form data
+                $.post($form.attr('action'), $form.serialize(), function(result) {
+                    if(result.valid){
+                        alert("修改成功");
+                    }
+                    $('#add_group_dialog').modal('hide')
+                }, 'json');
+            });
+        });
+    </script>
 {% endblock %}

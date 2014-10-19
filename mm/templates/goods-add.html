@@ -33,11 +33,11 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h1 class="page-header">
-                          <small> Group:{{ group.community.name }}</small>
+                          <small> 群名:{{ group.community.name }}</small>
                         </h1>
                         <ol class="breadcrumb">
                             <li class="active">
-                                <i class="fa fa-info"></i> GroupId: {{ group.community.number }} Code: {{ group.community.code }}
+                                <i class="fa fa-info"></i> 群号: {{ group.community.number }} 暗号: {{ group.community.code }}
                             </li>
                         </ol>
                     </div>
@@ -52,7 +52,7 @@
                                 <input type="hidden" name="communityId" value="{{ group.community.number }}"/>
 
                                 <div class="form-group">
-                                    <label class="col-md-2 control-label">Image Link</label>
+                                    <label class="col-md-2 control-label">商品图片</label>
                                     <div class="col-md-5">
                                         <input type="text" class="form-control" name="image" />
                                     </div>
@@ -64,43 +64,43 @@
                                 </span>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-md-2 control-label">Name</label>
+                                    <label class="col-md-2 control-label">商品标题</label>
                                     <div class="col-md-5">
                                         <input type="text" class="form-control" name="name" />
                                     </div>
                                 </div>
 
                                <div class="form-group">
-                                    <label class="col-md-2 control-label">Link</label>
+                                    <label class="col-md-2 control-label">详情链接</label>
                                     <div class="col-md-5">
                                         <input type="text" class="form-control" name="link" />
                                     </div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="col-md-2 control-label">Price</label>
+                                    <label class="col-md-2 control-label">原价</label>
                                     <div class="col-md-5">
                                         <input type="text" class="form-control" name="price" />
                                     </div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="col-md-2 control-label">Sale</label>
+                                    <label class="col-md-2 control-label">团价</label>
                                     <div class="col-md-5">
                                         <input type="text" class="form-control" name="sale" />
                                     </div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="col-md-2 control-label">desc</label>
+                                    <label class="col-md-2 control-label">备注</label>
                                     <div class="col-md-5">
-                                        <input type="textarea" class="form-control" name="desc" />
+                                        <textarea class="form-control" rows="3" class="form-control" name="desc" ></textarea>
                                     </div>
                                 </div>
 
 
                                <div class="form-group" id="addCategory">
-                                    <label class="col-md-2 control-label">Category</label>
+                                    <label class="col-md-2 control-label">品类（例如:颜色，号码）</label>
                                     <div class="col-md-5">
                                         <button type="button" class="btn btn-default addCategory">
                                                 <i class="fa fa-plus"></i>
@@ -110,7 +110,7 @@
 
                                 <div class="form-group">
                                     <div class="col-md-5 col-md-offset-3">
-                                        <button type="submit" class="btn btn-default">Save changes</button>
+                                        <button type="submit" class="btn btn-default">保存</button>
                                     </div>
                                 </div>
                            </form>
@@ -123,7 +123,7 @@
                                   </div>
                                   <div class="panel-body">
                                       <div class="form-group">
-                                        <label class="col-md-2 control-label">Category Name</label>
+                                        <label class="col-md-2 control-label">品类名称（例如 颜色）</label>
                                         <div class="col-md-5">
                                             <input type="hidden" name="categoryIndex" value=""/>
                                             <input type="text" class="form-control" name="categoryName" />
@@ -131,7 +131,7 @@
                                       </div>
 
                                     <div class="form-group">
-                                        <label class="col-md-2 control-label">Category Value</label>
+                                        <label class="col-md-2 control-label">品类值 （例如 黄色）</label>
                                         <div class="col-md-5">
                                             <input type="text" class="form-control" name="categoryValue[]" />
                                         </div>
@@ -259,7 +259,10 @@
                 $row.remove();
             });
 
-
+            $("#goods-form input[name='image']").blur(function(){
+                $('#imgview').empty()
+                $('#imgview').append('<span style="float:right"><img width="150px" src="'+$(this).val()+'"/></span>')
+            });
 
         });
 

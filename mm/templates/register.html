@@ -4,9 +4,14 @@
 
 {% block body%}
 
-     <div class="row">
+     <div class="row" style="margin-top: 10px">
             <div class="col-lg-12">
-                 <form id="user-modify" method="post" action="/user/modify/" class="form-horizontal">
+                 <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">{{ panelTitle }}</h3>
+                  </div>
+                  <div class="panel-body">
+                        <form id="user-modify" method="post" action="/user/modify/" class="form-horizontal">
                      {% csrf_token %}
                      <div class="form-group">
                                 <label class="col-md-2 control-label">用户名</label>
@@ -26,6 +31,9 @@
                             </div>
                       </div>
                  </form>
+                  </div>
+                </div>
+
             </div>
      </div>
 

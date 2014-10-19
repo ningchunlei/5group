@@ -101,13 +101,26 @@ def checknick(request,communityId):
         return HttpResponse(json.dumps({ "valid": True }),content_type='application/json; charset=utf8')
 
 @login_required(redirect_field_name=None,login_url="/login")
+def comunityNick(request):
+    nick = request.POST['nick']
+    id = request.POST['communityId']
+    group = UserGroupProfile.objects.filter(user=request.user,community=Community(id=id))[0]
+    group.nick= nick
+    group.save()
+    return HttpResponse(json.dumps({ "valid": True }),content_type='application/json; charset=utf8')
+
+@login_required(redirect_field_name=None,login_url="/login")
 def register(request):
-    return render(request, 'register.html', {'request':request})
+    return render(request, 'register.html', {'request':request,'panelTitle':"修改"})
+
+@login_required(redirect_field_name=None,login_url="/login")
+def registerNext(request):
+    return render(request, 'register.html', {'request':request,'panelTitle':"继续完成注册"})
 
 @login_required(redirect_field_name=None,login_url="/login")
 def manage(request):
     if request.session.has_key('is_new') and request.session.pop('is_new') :
-        return HttpResponseRedirect(redirect_to=reverse("mm:register"))
+        return HttpResponseRedirect(redirect_to=reverse("mm:registerNext"))
     return render(request, 'manage.html', {'request':request})
 
 @login_required(redirect_field_name=None,login_url="/login")
@@ -187,7 +200,8 @@ def savegoods(request):
         gc.category = category
         gc.product = goods
         gc.save()
-    shutil.move("/www/tmp/"+params["image"],"/www/image/"+params["image"])
+    if re.search('^http://',params["image"]) == None:
+        shutil.move("/www/tmp/"+params["image"],"/www/image/"+params["image"])
     return HttpResponseRedirect(redirect_to=reverse("mm:usergroup",args=[params["communityId"]]))
 
 @login_required(redirect_field_name=None,login_url="/login")
@@ -208,6 +222,8 @@ def detailGoods(request,goodsId):
 def order(request,communityId,goodsId):
     params = request.POST;
     gd = Goods.objects.select_related('community','groupProfile').filter(id=goodsId)[0]
+    if gd.status == 1 :
+        return HttpResponseRedirect(redirect_to=reverse("mm:detailGoods",args=[goodsId]))
     group = UserGroupProfile.objects.select_related('community').filter(user=request.user,community=gd.community)[0]
     order = Orders()
     order.groupProfile=group
@@ -228,6 +244,10 @@ def order(request,communityId,goodsId):
 def deleteOrder(request,orderId):
     params = request.POST;
     order = Orders.objects.get(id=orderId)
+
+    if order.goods.status == 1 :
+        return HttpResponseRedirect(redirect_to=reverse("mm:detailGoods",args=[order.goods.id]))
+
     if request.user.id != order.groupProfile.user.id:
          return HttpResponseRedirect(redirect_to=reverse("mm:index"))
     order.delete()
@@ -285,10 +305,12 @@ def statisticsOrder(request,goodsId):
 
     xAxis = combination(xCategory,0);
     yAxis = combination(yCategory,0)
-
-
-
     return render(request, 'statistics.html',{'request':request,'group':group,'goods':gd,"categorys":gdCategorys,"xAxis":xAxis,"yAxis":yAxis,'x_axis':xValues,'y_axis':yValues,'hMap':hMap,'count':CountObj(0)})
 
-
-
+@login_required(redirect_field_name=None,login_url="/login")
+def freeze(request,goodsId):
+    gd = Goods.objects.get(id=goodsId)
+    if gd.community.user.id == request.user.id or gd.groupProfile.user.id == request.user.id:
+        gd.status==1
+        gd.save()
+    return HttpResponseRedirect(redirect_to=reverse("mm:usergroup",args=[gd.community.id]))

@@ -16,12 +16,15 @@ urlpatterns = patterns('mm.views',
     url(r'^order/statistics/(?P<goodsId>[^/]+)[/]*$', 'statisticsOrder',name='statisticsOrder'),
     url(r'^community/(?P<communityId>[^/]+)/check[/]*$', 'checknick',name='checknick'),
     url(r'^community/join/(?P<communityId>[^/]+)[/]*$', 'join',name='join'),
+    url(r'^community/modify/nick[/]*$', 'comunityNick',name='comunityNick'),
     url(r'^login[/]*$', 'login',name='login'),
     url(r'^user/check[/]*$', 'userCheck',name='userCheck'),
     url(r'^user/modify[/]*$', 'userModify',name='userModify'),
     url(r'^user/register[/]*$', 'register',name='register'),
+    url(r'^user/register/next[/]*$', 'registerNext',name='registerNext'),
     url(r'^user/login[/]*$', 'userLogin',name='userLogin'),
     url(r'^upload/image[/]*$', 'uploadImage',name='uploadImage'),
+    url(r'^freeze/(?P<goodsId>[^/]+)[/]*$', 'freeze',name='freeze'),
 )
 
 if settings.DEBUG:

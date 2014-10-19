@@ -7,13 +7,13 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mm', '0001_initial'),
+        ('oauthdjango', '0001_initial'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='question',
-            name='question_text',
-            field=models.CharField(max_length=20),
+            model_name='code',
+            name='email',
+            field=models.EmailField(max_length=75),
         ),
     ]
