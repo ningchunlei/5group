@@ -71,7 +71,7 @@
                                         <tr>
                                             <td>{{ y }}</td>
                                             {% for x in xAxis %}
-                                                <td id="grid{{ count.inc }}">{{ hMap|get_item:y|get_item:x|orderlen }}</td>
+                                                <td><a href="#" id="grid{{ count.inc }}">{{ hMap|get_item:y|get_item:x|orderlen }}</a></td>
                                             {% endfor %}
                                         </tr>
                                     {% endfor %}
@@ -80,6 +80,37 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2>详细名单</h2>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        {% for x in xAxis %}
+                                            <th>{{ x }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for y in yAxis %}
+                                        <tr>
+                                            <td>{{ y }}</td>
+                                            {% for x in xAxis %}
+                                                <td>
+                                                    {% for item in  hMap|get_item:y|get_item:x%}订单号:{{ item.id }},用户:{{ item.groupProfile.nick }}, 数量:{{ item.number }} <a href='{% url 'mm:deleteOrder' item.id%}'>删除</a><br>{%  endfor %}
+                                                    <a href="#">{{ hMap|get_item:y|get_item:x|orderlen }}</a></td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
 {% endblock %}
 
 
@@ -118,15 +149,7 @@
                 }
             });
         })
-        {{ count.reset }}
-        {% for y in yAxis %}
-            {% for x in xAxis %}
-                $('#grid{{ count.inc }}').popover({content:"hello<br>hello<br>",
-                 html:true,
-                 container:'body',
-                template:'<div class="popover" style="z-index:900" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'})
-            {% endfor %}
-        {% endfor %}
+
     </script>
 {% endblock %}
 

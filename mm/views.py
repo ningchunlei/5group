@@ -248,7 +248,7 @@ def deleteOrder(request,orderId):
     if order.goods.status == 1 :
         return HttpResponseRedirect(redirect_to=reverse("mm:detailGoods",args=[order.goods.id]))
 
-    if request.user.id != order.groupProfile.user.id:
+    if request.user.id != order.groupProfile.user.id or order.goods.community.user.id == request.user.id or order.goods.groupProfile.user.id == request.user.id:
          return HttpResponseRedirect(redirect_to=reverse("mm:index"))
     order.delete()
     OrderCategory.objects.filter(order=Orders(id=orderId)).delete()
