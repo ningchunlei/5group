@@ -180,7 +180,7 @@ SOCIAL_AUTH_QQ_SECRET = '59176997be38f1bf671bec55cf86be7c'
 FILE_UPLOAD_HANDLERS = ("mm.filehandler.MMFileUploadHandler",
  "django.core.files.uploadhandler.TemporaryFileUploadHandler")
 
-MAX_FILEUPLOAD_SIZE=100000
+MAX_FILEUPLOAD_SIZE=300000
 
 
 
