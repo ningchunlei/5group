@@ -244,15 +244,22 @@ def order(request,communityId,goodsId):
 def deleteOrder(request,orderId):
     params = request.POST;
     order = Orders.objects.get(id=orderId)
-
     if order.goods.status == 1 :
         return HttpResponseRedirect(redirect_to=reverse("mm:detailGoods",args=[order.goods.id]))
-
-    if request.user.id != order.groupProfile.user.id or order.goods.community.user.id == request.user.id or order.goods.groupProfile.user.id == request.user.id:
+    if request.user.id != order.groupProfile.user.id:
          return HttpResponseRedirect(redirect_to=reverse("mm:index"))
     order.delete()
     OrderCategory.objects.filter(order=Orders(id=orderId)).delete()
     return HttpResponseRedirect(redirect_to=reverse("mm:detailGoods",args=[order.goods.id]))
+
+@login_required(redirect_field_name=None,login_url="/login")
+def deleteOrderByAdmin(request,orderId):
+    order = Orders.objects.get(id=orderId)
+    if not (order.goods.community.user.id == request.user.id or order.goods.groupProfile.user.id == request.user.id):
+         return HttpResponseRedirect(redirect_to=reverse("mm:index"))
+    order.delete()
+    OrderCategory.objects.filter(order=Orders(id=orderId)).delete()
+    return HttpResponseRedirect(redirect_to=reverse("mm:statisticsOrder",args=[order.goods.id]))
 
 
 @login_required(redirect_field_name=None,login_url="/login")
@@ -260,6 +267,14 @@ def statisticsOrder(request,goodsId):
     params = request.POST
     xValues=params.getlist("x")
     yValues=params.getlist("y")
+    if len(xValues)==0:
+        xValues = request.session.get("goods_"+str(goodsId),([],[]))[0]
+    if len(yValues)==0:
+        yValues = request.session.get("goods_"+str(goodsId),([],[]))[1]
+    if len(xValues)!=0  or len(yValues)!=0:
+        request.session["goods_"+str(goodsId)]=(xValues,yValues)
+        request.session.modified = True
+
     xValues=map(lambda x:int(x),xValues)
     yValues=map(lambda x:int(x),yValues)
 
@@ -305,12 +320,35 @@ def statisticsOrder(request,goodsId):
 
     xAxis = combination(xCategory,0);
     yAxis = combination(yCategory,0)
-    return render(request, 'statistics.html',{'request':request,'group':group,'goods':gd,"categorys":gdCategorys,"xAxis":xAxis,"yAxis":yAxis,'x_axis':xValues,'y_axis':yValues,'hMap':hMap,'count':CountObj(0)})
+
+    orderPeople = {}
+    for order in orders:
+        id = order.groupProfile.user.id
+        if not orderPeople.has_key(id):
+            orderPeople.setdefault(id,[])
+        orderPeople[id].append(order)
+
+    return render(request, 'statistics.html',{'request':request,'group':group,'goods':gd,"categorys":gdCategorys,"xAxis":xAxis,"yAxis":yAxis,'x_axis':xValues,'y_axis':yValues,'hMap':hMap,'count':CountObj(0),'orderByPeople':orderPeople.values()})
+
+@login_required(redirect_field_name=None,login_url="/login")
+def modifyOrderNumber(request,orderId):
+    order = Orders.objects.get(id=orderId)
+
+    if not (order.goods.community.user.id == request.user.id or order.goods.groupProfile.user.id == request.user.id):
+         return HttpResponseRedirect(redirect_to=reverse("mm:index"))
+    order.number = request.POST["n"]
+    order.save()
+    return HttpResponseRedirect(redirect_to=reverse("mm:statisticsOrder",args=[order.goods.id]))
+
 
 @login_required(redirect_field_name=None,login_url="/login")
 def freeze(request,goodsId):
     gd = Goods.objects.get(id=goodsId)
     if gd.community.user.id == request.user.id or gd.groupProfile.user.id == request.user.id:
-        gd.status==1
+        gd.status=1
         gd.save()
-    return HttpResponseRedirect(redirect_to=reverse("mm:usergroup",args=[gd.community.id]))
+    return HttpResponseRedirect(redirect_to=reverse("mm:usergroup",args=[gd.community.number]))
+
+def latest(request):
+    gd = Goods.objects.all()
+    return render(request, 'latest.html', {'request':request,"goods":gd})

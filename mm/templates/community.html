@@ -1,7 +1,4 @@
 {% extends "base.html" %}
-
-{% block title %}{{ request.user }}{% endblock %}
-
 {% block body %}
 <!-- Page Heading -->
                 <div class="row">
@@ -40,7 +37,7 @@
                                             <td>{{ gd.offprice }}</td>
                                             <td>{{ gd.groupProfile.nick }}</td>
                                             <td>{{ gd.time }}</td>
-                                            <td><a href="{% url 'mm:detailGoods' gd.id%}">去看看</a> | <a href="{% url 'mm:statisticsOrder' gd.id%}">统计</a> {% if gd.community.user.id == request.user.id or gd.groupProfile.user.id == request.user.id %}| <a href="{% url 'mm:freeze' gd.id%}">结束</a>{% endif %}</td>
+                                            <td><a href="{% url 'mm:detailGoods' gd.id%}">去看看</a> | <a href="{% url 'mm:statisticsOrder' gd.id%}">统计</a> {% if gd.community.user.id == request.user.id or gd.groupProfile.user.id == request.user.id %}| <a href="{% url 'mm:freeze' gd.id%}">结束团购</a>{% endif %}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -61,6 +58,7 @@
                                         <th>团价</th>
                                         <th>发起人</th>
                                         <th>发起时间</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -71,6 +69,7 @@
                                             <td>{{ gd.offprice }}</td>
                                             <td>{{ gd.groupProfile.nick }}</td>
                                             <td>{{ gd.time }}</td>
+                                            <td><a href="{% url 'mm:statisticsOrder' gd.id%}">统计</a></td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>

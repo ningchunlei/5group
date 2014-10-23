@@ -12,7 +12,8 @@ urlpatterns = patterns('mm.views',
     url(r'^goods/detail/(?P<goodsId>[^/]+)[/]*$', 'detailGoods',name='detailGoods'),
     url(r'^order/community/(?P<communityId>[^/]+)/id/(?P<goodsId>[^/]+)[/]*$', 'order',name='order'),
     url(r'^order/delete/(?P<orderId>[^/]+)[/]*$', 'deleteOrder',name='deleteOrder'),
-    url(r'^order/delete/(?P<orderId>[^/]+)[/]*$', 'deleteOrder',name='deleteOrder'),
+    url(r'^order/mdelete/(?P<orderId>[^/]+)[/]*$', 'deleteOrderByAdmin',name='deleteOrderByAdmin'),
+    url(r'^order/modifynum/(?P<orderId>[^/]+)[/]*$', 'modifyOrderNumber',name='modifyOrderNumber'),
     url(r'^order/statistics/(?P<goodsId>[^/]+)[/]*$', 'statisticsOrder',name='statisticsOrder'),
     url(r'^community/(?P<communityId>[^/]+)/check[/]*$', 'checknick',name='checknick'),
     url(r'^community/join/(?P<communityId>[^/]+)[/]*$', 'join',name='join'),
@@ -25,6 +26,7 @@ urlpatterns = patterns('mm.views',
     url(r'^user/login[/]*$', 'userLogin',name='userLogin'),
     url(r'^upload/image[/]*$', 'uploadImage',name='uploadImage'),
     url(r'^freeze/(?P<goodsId>[^/]+)[/]*$', 'freeze',name='freeze'),
+    url(r'^latest[/]*$', 'latest',name='latest'),
 )
 
 if settings.DEBUG:

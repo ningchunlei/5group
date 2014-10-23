@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load tags %}
-{% block title %}{{ request.user }}{% endblock %}
 
 {% block body %}
 <!-- Page Heading -->
@@ -82,7 +81,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-lg-12">
+                    <div class="col-lg-12" id="detailStatistics">
                         <h2>详细名单</h2>
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover">
@@ -100,8 +99,29 @@
                                             <td>{{ y }}</td>
                                             {% for x in xAxis %}
                                                 <td>
-                                                    {% for item in  hMap|get_item:y|get_item:x%}订单号:{{ item.id }},用户:{{ item.groupProfile.nick }}, 数量:{{ item.number }} <a href='{% url 'mm:deleteOrder' item.id%}'>删除</a><br>{%  endfor %}
-                                                    <a href="#">{{ hMap|get_item:y|get_item:x|orderlen }}</a></td>
+                                                    <table class="table table-bordered table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>订单号</th>
+                                                                <th>用户</th>
+                                                                <th>数量</th>
+                                                                <th></th>
+                                                                <th></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                    {% for item in  hMap|get_item:y|get_item:x%}
+                                                        <tr>
+                                                        <td>{{ item.id }}</td><td>{{ item.groupProfile.nick }}</td><td>{{ item.number }}</td>
+                                                         {% if item.goods.community.user.id == request.user.id or item.groupProfile.user.id == request.user.id %}
+                                                            <td><a href='{% url 'mm:deleteOrderByAdmin' item.id%}'>删除</a></td>
+                                                            <td><a href='#' data-id="{{ item.id }}" data-number="{{ item.number }}" class="modifyNumber" >修改数量</a></td>
+                                                        {% endif %}
+                                                        </tr>
+                                                    {%  endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </td>
                                             {% endfor %}
                                         </tr>
                                     {% endfor %}
@@ -110,6 +130,76 @@
                         </div>
                     </div>
                 </div>
+
+           <div class="row">
+                    <div class="col-lg-12" id="detailStatistics">
+                        <h2>详细名单</h2>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>用户</th>
+                                        {% for ct in categorys %}
+                                               <th>{{ ct.category.name }}</th>
+                                        {% endfor %}
+                                        <th>数量</th>
+                                        <th>价钱</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                     {% for item in  orderByPeople%}
+                                         <tr>
+                                             <td rowspan="{{ item|length }}">{{ item|nick }}</td>
+                                                    {% for order in  item|slice:":1"%}
+                                                          {% for oc in  order.categorys%}
+                                                              <td>{{ oc.categoryValue.value }}</td>
+                                                          {% endfor %}
+                                                          <td>{{ order.number }}</td>
+                                                    {% endfor %}
+                                             <td rowspan="{{ item|length }}">{{ item|totalPrice }}</td>
+                                         </tr>
+                                         <tr>
+                                          {% for order in  item|slice:"1:"%}
+                                                  {% for oc in  order.categorys%}
+                                                      <td>{{ oc.categoryValue.value }}</td>
+                                                  {% endfor %}
+                                                  <td>{{ order.number }}</td>
+                                           {% endfor %}
+                                         </tr>
+                                     {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+    <div class="modal fade" id="add_group_dialog" tabindex="-1" role="dialog" aria-labelledby="add_group_dialog_label" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="add_group_dialog_label">修改数量</h4>
+          </div>
+          <div class="modal-body">
+            <form id="community-form" method="post" action="" class="form-horizontal">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="col-md-3 control-label">数量</label>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" name="n" value=""/>
+                    </div>
+                </div>
+
+                 <div class="form-group">
+                    <div class="col-md-5 col-md-offset-3">
+                        <button type="submit" class="btn btn-default">保存</button>
+                    </div>
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 
 {% endblock %}
 
@@ -148,8 +238,36 @@
                     }
                 }
             });
-        })
 
+            $("#detailStatistics .modifyNumber").click(function(e){
+                var orderId = $(this).data("id")
+                var number = $(this).data("number")
+                $("#community-form").attr("action","/order/modifynum/"+orderId)
+                $("#community-form input[name='n']").val(number)
+                $('#add_group_dialog').modal('show')
+            })
+
+            $('#community-form')
+            .bootstrapValidator({
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    n: {
+                        validators: {
+                            notEmpty: {
+                                message: ''
+                            },
+                             integer: {
+                                message: '数字'
+                            }
+                        }
+                    }
+                }
+            })
+        });
     </script>
 {% endblock %}
 
