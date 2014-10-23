@@ -177,7 +177,9 @@ def savegoods(request):
     group = UserGroupProfile.objects.filter(user=request.user,community=community)[0]
     goods = Goods()
     goods.name = params["name"]
-    goods.image = params["image"]
+    img = re.compile(r'^/media').sub("/image",params["image"])
+    fimg = re.compile(r'^/media').sub("",params["image"])
+    goods.image = img
     goods.groupProfile = group
     goods.link = params["link"]
     goods.price = float(params["price"])
@@ -201,7 +203,7 @@ def savegoods(request):
         gc.product = goods
         gc.save()
     if re.search('^http://',params["image"]) == None:
-        shutil.move("/www/tmp/"+params["image"],"/www/image/"+params["image"])
+        shutil.move("/www/tmp/"+fimg,"/www/image/"+fimg)
     return HttpResponseRedirect(redirect_to=reverse("mm:usergroup",args=[params["communityId"]]))
 
 @login_required(redirect_field_name=None,login_url="/login")
