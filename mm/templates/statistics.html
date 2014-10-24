@@ -149,14 +149,14 @@
                                 <tbody>
                                      {% for item in  orderByPeople%}
                                          <tr>
-                                             <td rowspan="{{ item|length }}">{{ item|nick }}</td>
+                                             <td rowspan="{{ item|length|inc }}">{{ item|nick }}</td>
                                                     {% for order in  item|slice:":1"%}
                                                           {% for oc in  order.categorys%}
                                                               <td>{{ oc.categoryValue.value }}</td>
                                                           {% endfor %}
                                                           <td>{{ order.number }}</td>
                                                     {% endfor %}
-                                             <td rowspan="{{ item|length }}">{{ item|totalPrice }}</td>
+                                             <td rowspan="{{ item|length|inc }}">{{ item|totalPrice }}</td>
                                          </tr>
                                          <tr>
                                           {% for order in  item|slice:"1:"%}
