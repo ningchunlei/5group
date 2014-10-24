@@ -16,6 +16,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as authLogin
 import re
 from django.conf import settings
+from django.db.models import Q
 import  shutil
 from django.core import serializers
 # Create your views here.
@@ -359,6 +360,14 @@ def freeze(request,goodsId):
         gd.save()
     return HttpResponseRedirect(redirect_to=reverse("mm:usergroup",args=[gd.community.number]))
 
+@login_required(redirect_field_name=None,login_url="/login")
+def deleteGoods(request,goodsId):
+    gd = Goods.objects.get(id=goodsId)
+    if gd.community.user.id == request.user.id or gd.groupProfile.user.id == request.user.id:
+        gd.status=2
+        gd.save()
+    return HttpResponseRedirect(redirect_to=reverse("mm:usergroup",args=[gd.community.number]))
+
 def latest(request):
-    gd = Goods.objects.all().order_by('-time')
+    gd = Goods.objects.filter(~Q(status=2)).order_by('-time')
     return render(request, 'latest.html', {'request':request,"goods":gd})
