@@ -203,7 +203,7 @@ def savegoods(request):
         gc.product = goods
         gc.save()
     if re.search('^http://',params["image"]) == None:
-        shutil.move("/www/tmp/"+fimg,"/www/image/"+fimg)
+        shutil.move("/www/tmp/"+fimg,"/www/image/"+str(request.user.uid))
     return HttpResponseRedirect(redirect_to=reverse("mm:usergroup",args=[params["communityId"]]))
 
 @login_required(redirect_field_name=None,login_url="/login")
