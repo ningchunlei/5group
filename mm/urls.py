@@ -26,6 +26,7 @@ urlpatterns = patterns('mm.views',
     url(r'^user/login[/]*$', 'userLogin',name='userLogin'),
     url(r'^upload/image[/]*$', 'uploadImage',name='uploadImage'),
     url(r'^freeze/(?P<goodsId>[^/]+)[/]*$', 'freeze',name='freeze'),
+    url(r'^goods/delete/(?P<goodsId>[^/]+)[/]*$', 'deleteGoods',name='deleteGoods'),
     url(r'^latest[/]*$', 'latest',name='latest'),
 )
 
