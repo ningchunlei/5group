@@ -160,10 +160,12 @@
                                          </tr>
                                          <tr>
                                           {% for order in  item|slice:"1:"%}
+                                               <tr>
                                                   {% for oc in  order.categorys%}
                                                       <td>{{ oc.categoryValue.value }}</td>
                                                   {% endfor %}
                                                   <td>{{ order.number }}</td>
+                                                </tr>
                                            {% endfor %}
                                          </tr>
                                      {% endfor %}
