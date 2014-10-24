@@ -356,5 +356,5 @@ def freeze(request,goodsId):
     return HttpResponseRedirect(redirect_to=reverse("mm:usergroup",args=[gd.community.number]))
 
 def latest(request):
-    gd = Goods.objects.all().order_by('time')
+    gd = Goods.objects.all().order_by('-time')
     return render(request, 'latest.html', {'request':request,"goods":gd})
