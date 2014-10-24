@@ -72,7 +72,7 @@
                                     <a href="/login/qq/"><img src="/static/img/qq.png"/>登录</a>
                                 </li>
                                 <li>
-                                    <a href="#add_group_dialog" data-toggle="modal" data-target="#add_group_dialog"><i class="fa fa-user"></i>登录</a>
+                                    <a href="#user_login_dialog" data-toggle="modal" data-target="#user_login_dialog"><i class="fa fa-user"></i>登录</a>
                                 </li>
                          </ul>
                     {% endif %}
@@ -96,12 +96,12 @@
     </div>
 
 
-   <div class="modal fade" id="add_group_dialog" tabindex="-1" role="dialog" aria-labelledby="add_group_dialog_label" aria-hidden="true">
+   <div class="modal fade" id="user_login_dialog" tabindex="-1" role="dialog" aria-labelledby="user_login_dialog_label" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="add_group_dialog_label">登录</h4>
+            <h4 class="modal-title" id="user_login_dialog_label">登录</h4>
           </div>
           <div class="modal-body">
             <form id="community-form" method="post" action="/user/login/" class="form-horizontal">
