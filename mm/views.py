@@ -203,6 +203,10 @@ def savegoods(request):
         gc.product = goods
         gc.save()
     if re.search('^http://',params["image"]) == None:
+        try:
+            os.mkdir("")
+        except:
+            pass
         shutil.move("/www/tmp/"+fimg,"/www/image/"+str(request.user.uid))
     return HttpResponseRedirect(redirect_to=reverse("mm:usergroup",args=[params["communityId"]]))
 
