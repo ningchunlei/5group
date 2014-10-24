@@ -205,7 +205,7 @@ def savegoods(request):
         gc.save()
     if re.search('^http://',params["image"]) == None:
         try:
-            os.mkdir("/www/image"+str(request.user.id))
+            os.mkdir("/www/image/"+str(request.user.id))
         except:
             pass
         shutil.move("/www/tmp/"+fimg,"/www/image/"+str(request.user.id))
