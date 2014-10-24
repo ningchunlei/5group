@@ -23,8 +23,12 @@
 
 {% block script %}
 <script type="text/javascript" src="/static/js/masonry.pkgd.min.js"></script>
+<script type="text/javascript" src="/static/js/imagesloaded.pkgd.min.js"></script>
 <script>
-$(function(){
+
+var $container = $('#posts');
+// initialize Masonry after all images have loaded
+$container.imagesLoaded( function() {
     $('#posts').masonry({
       itemSelector : '.item'
     });
