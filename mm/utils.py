@@ -1,5 +1,9 @@
 __author__ = 'chunlei3'
 
+import json
+from mm.models import Orders,UserGroupProfile
+from django.db.models.fields.related import ForeignKey
+
 def isEmpty(params,key):
     if not params.has_key(key):
         return True
@@ -31,5 +35,15 @@ class CountObj(object):
     def reset(self):
         self.count = 0
         return ""
+
+class StatisticsOrderEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj,Orders):
+            return {'id':obj.id,'number':obj.number,'groupProfile':{'nick':obj.groupProfile.nick}}
+
+
+
+
+
 
 

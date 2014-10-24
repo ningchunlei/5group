@@ -70,7 +70,7 @@
                                         <tr>
                                             <td>{{ y }}</td>
                                             {% for x in xAxis %}
-                                                <td><a href="#" id="grid{{ count.inc }}">{{ hMap|get_item:y|get_item:x|orderlen }}</a></td>
+                                                <td><a class="statisticsTrigger" data-x="{{ x }}" data-y="{{ y }}"  href="#"  id="grid{{ count.inc }}">{{ hMap|get_item:y|get_item:x|orderlen }}</a></td>
                                             {% endfor %}
                                         </tr>
                                     {% endfor %}
@@ -80,56 +80,7 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-lg-12" id="detailStatistics">
-                        <h2>详细名单</h2>
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        {% for x in xAxis %}
-                                            <th>{{ x }}</th>
-                                        {% endfor %}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for y in yAxis %}
-                                        <tr>
-                                            <td>{{ y }}</td>
-                                            {% for x in xAxis %}
-                                                <td>
-                                                    <table class="table table-bordered table-hover">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>订单号</th>
-                                                                <th>用户</th>
-                                                                <th>数量</th>
-                                                                <th></th>
-                                                                <th></th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                    {% for item in  hMap|get_item:y|get_item:x%}
-                                                        <tr>
-                                                        <td>{{ item.id }}</td><td>{{ item.groupProfile.nick }}</td><td>{{ item.number }}</td>
-                                                         {% if item.goods.community.user.id == request.user.id or item.groupProfile.user.id == request.user.id %}
-                                                            <td><a href='{% url 'mm:deleteOrderByAdmin' item.id%}'>删除</a></td>
-                                                            <td><a href='#' data-id="{{ item.id }}" data-number="{{ item.number }}" class="modifyNumber" >修改数量</a></td>
-                                                        {% endif %}
-                                                        </tr>
-                                                    {%  endfor %}
-                                                        </tbody>
-                                                    </table>
-                                                </td>
-                                            {% endfor %}
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+
 
            <div class="row">
                     <div class="col-lg-12" id="detailStatistics">
@@ -203,6 +154,34 @@
       </div>
     </div>
 
+
+    <div class="modal fade" id="statistics_group_dialog" tabindex="-1" role="dialog" aria-labelledby="statistics_group_dialog_label" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="statistics_group_dialog_label">订单列表</h4>
+          </div>
+          <div class="modal-body">
+                <table class="table table-bordered table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>订单号</th>
+                                                                <th>用户</th>
+                                                                <th>数量</th>
+                                                                <th></th>
+                                                                <th></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+
+                    </tbody>
+                    </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
 {% endblock %}
 
 
@@ -215,6 +194,10 @@
     </style>
     <script>
        var categoryCount = 0;
+       {% autoescape off %}
+            var orderJson = {{ jsonOrder }};
+       {% endautoescape %}
+       var isOwner = {% if item.goods.community.user.id == request.user.id or item.groupProfile.user.id == request.user.id %} true {% endif %}
        $(document).ready(function() {
         $('#order-form')
             .bootstrapValidator({
@@ -241,13 +224,6 @@
                 }
             });
 
-            $("#detailStatistics .modifyNumber").click(function(e){
-                var orderId = $(this).data("id")
-                var number = $(this).data("number")
-                $("#community-form").attr("action","/order/modifynum/"+orderId)
-                $("#community-form input[name='n']").val(number)
-                $('#add_group_dialog').modal('show')
-            })
 
             $('#community-form')
             .bootstrapValidator({
@@ -268,7 +244,41 @@
                         }
                     }
                 }
-            })
+            });
+
+             $(".statisticsTrigger").click(function(e){
+                var x = $(this).data("x")
+                var y = $(this).data("y")
+                 console.log(x)
+                 console.log(y)
+                 try{
+                    $('#statistics_group_dialog .modal-body tbody').empty()
+                    var s = ""
+                    for(i in orderJson[y][x])
+                    {
+                        t = orderJson[y][x][i]
+                        s =  "<tr><td>"+t.id+"</td><td>"+t.groupProfile.nick+"</td><td>"+t.number+"</td>"
+                        if (isOwner)
+                            s = s + "<td><a href='/order/mdelete/"+ t.id +"'>删除</a></td><td><a href='#' data-id='"+t.id+"' data-number='"+ t.number +"' class='modifyNumber' >修改数量</a></td>"
+                        s = s +"</tr>"
+                    }
+                    $('#statistics_group_dialog .modal-body tbody').append(s)
+
+                    $("#statistics_group_dialog .modifyNumber").click(function(e){
+                        var orderId = $(this).data("id")
+                        var number = $(this).data("number")
+                        $("#community-form").attr("action","/order/modifynum/"+orderId)
+                        $("#community-form input[name='n']").val(number)
+                         $('#statistics_group_dialog').modal('hide')
+                        $('#add_group_dialog').modal('show')
+                    });
+                    $('#statistics_group_dialog').modal('show')
+                 }catch (err){
+
+                 }
+
+            });
+
         });
     </script>
 {% endblock %}

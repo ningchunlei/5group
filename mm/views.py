@@ -10,13 +10,14 @@ from uuid import uuid4
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.views.decorators.http import require_POST
 from django.db import transaction
-from utils import isEmpty,combination,CountObj
+from utils import isEmpty,combination,CountObj,StatisticsOrderEncoder
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as authLogin
 import re
 from django.conf import settings
 import  shutil
+from django.core import serializers
 # Create your views here.
 
 def index(request):
@@ -158,7 +159,7 @@ def checkCommunityNumber(request):
 @login_required(redirect_field_name=None,login_url="/login")
 def usergroup(request,communityId):
     community = Community.objects.get(number=communityId)
-    group = UserGroupProfile.objects.select_related('community').filter(user=request.user.is_authenticated(),community=community)[0]
+    group = UserGroupProfile.objects.select_related('community').filter(user=request.user,community=community)[0]
     doingGoods = Goods.objects.select_related('community').filter(status=0,community=community);
     historyGoods = Goods.objects.select_related('community').filter(status=1,community=community);
     return render(request, 'community.html', {'request':request,'group':group,"communityId":communityId,"doingGoods":doingGoods,"historyGoods":historyGoods})
@@ -204,10 +205,10 @@ def savegoods(request):
         gc.save()
     if re.search('^http://',params["image"]) == None:
         try:
-            os.mkdir("")
+            os.mkdir("/www/image"+str(request.user.id))
         except:
             pass
-        shutil.move("/www/tmp/"+fimg,"/www/image/"+str(request.user.uid))
+        shutil.move("/www/tmp/"+fimg,"/www/image/"+str(request.user.id))
     return HttpResponseRedirect(redirect_to=reverse("mm:usergroup",args=[params["communityId"]]))
 
 @login_required(redirect_field_name=None,login_url="/login")
@@ -314,6 +315,7 @@ def statisticsOrder(request,goodsId):
             hMap[yv].setdefault(xv,[])
         hMap[yv][xv].append(order)
 
+
     xCategory=[]
     yCategory=[]
     gdCategorys = GoodsCategory.objects.select_related('category').filter(product=Goods(id=goodsId)).order_by('category')
@@ -334,7 +336,9 @@ def statisticsOrder(request,goodsId):
             orderPeople.setdefault(id,[])
         orderPeople[id].append(order)
 
-    return render(request, 'statistics.html',{'request':request,'group':group,'goods':gd,"categorys":gdCategorys,"xAxis":xAxis,"yAxis":yAxis,'x_axis':xValues,'y_axis':yValues,'hMap':hMap,'count':CountObj(0),'orderByPeople':orderPeople.values()})
+    jsondata = StatisticsOrderEncoder().encode(hMap)
+    return render(request, 'statistics.html',{'request':request,'group':group,'goods':gd,"categorys":gdCategorys,"xAxis":xAxis,"yAxis":yAxis,'x_axis':xValues,'y_axis':yValues,'hMap':hMap,'count':CountObj(0),'orderByPeople':orderPeople.values(),
+                                              'jsonOrder':jsondata})
 
 @login_required(redirect_field_name=None,login_url="/login")
 def modifyOrderNumber(request,orderId):
