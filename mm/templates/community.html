@@ -4,7 +4,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h1 class="page-header">
-                          <small> 群名:{{ group.community.name }} <a href="{% url 'mm:addgoods' group.community.number %}"><i class="fa fa-plus-square"> 添加商品 </i></a>   <a href="#add_group_dialog" data-toggle="modal" data-target="#add_group_dialog"><i class="fa fa-plus-square"> 修改昵称 </i></a></small>
+                          <small> 群名:{{ group.community.name }} <a href="{% url 'mm:addgoods' group.community.number %}"><i class="fa fa-plus-square"> 添加商品 </i></a>   <a href="#modify_nick_dialog" data-toggle="modal" data-target="#modify_nick_dialog"><i class="fa fa-plus-square"> 修改昵称 </i></a></small>
                         </h1>
                         <ol class="breadcrumb">
                             <li class="active">
@@ -79,12 +79,12 @@
                 </div>
 
 
-     <div class="modal fade" id="add_group_dialog" tabindex="-1" role="dialog" aria-labelledby="add_group_dialog_label" aria-hidden="true">
+     <div class="modal fade" id="modify_nick_dialog" tabindex="-1" role="dialog" aria-labelledby="modify_nick_dialog_label" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="add_group_dialog_label">修改昵称</h4>
+            <h4 class="modal-title" id="modify_nick_dialog_label">修改昵称</h4>
           </div>
           <div class="modal-body">
             <form id="community-form" method="post" action="/community/modify/nick/" class="form-horizontal">
@@ -150,7 +150,7 @@
                     if(result.valid){
                         alert("修改成功");
                     }
-                    $('#add_group_dialog').modal('hide')
+                    $('#modify_nick_dialog').modal('hide')
                 }, 'json');
             });
         });
