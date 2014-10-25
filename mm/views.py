@@ -222,7 +222,7 @@ def detailGoods(request,goodsId):
     try:
         group = UserGroupProfile.objects.select_related('community').filter(user=request.user,community=gd.community)[0]
     except:
-        return HttpResponseRedirect(redirect_to='/?id='+gd.community.id)
+        return HttpResponseRedirect(redirect_to='/?id='+str(gd.community.id))
     orders = Orders.objects.select_related('goods').filter(goods=Goods(id=goodsId),groupProfile=group)
     for order in orders :
         order.categorys = OrderCategory.objects.select_related('categoryValue').filter(order=order)
