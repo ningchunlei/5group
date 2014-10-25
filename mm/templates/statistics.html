@@ -126,12 +126,12 @@
                     </div>
                 </div>
 
-    <div class="modal fade" id="add_group_dialog" tabindex="-1" role="dialog" aria-labelledby="add_group_dialog_label" aria-hidden="true">
+    <div class="modal fade" id="modify_number_dialog" tabindex="-1" role="dialog" aria-labelledby="modify_number_dialog_label" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="add_group_dialog_label">修改数量</h4>
+            <h4 class="modal-title" id="modify_number_dialog_label">修改数量</h4>
           </div>
           <div class="modal-body">
             <form id="community-form" method="post" action="" class="form-horizontal">
@@ -257,7 +257,7 @@
                     for(i in orderJson[y][x])
                     {
                         t = orderJson[y][x][i]
-                        s =  "<tr><td>"+t.id+"</td><td>"+t.groupProfile.nick+"</td><td>"+t.number+"</td>"
+                        s =  s + "<tr><td>"+t.id+"</td><td>"+t.groupProfile.nick+"</td><td>"+t.number+"</td>"
                         if (isOwner)
                             s = s + "<td><a href='/order/mdelete/"+ t.id +"'>删除</a></td><td><a href='#' data-id='"+t.id+"' data-number='"+ t.number +"' class='modifyNumber' >修改数量</a></td>"
                         s = s +"</tr>"

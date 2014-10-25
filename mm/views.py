@@ -220,7 +220,7 @@ def detailGoods(request,goodsId):
     for gdc in gdCategorys:
         gdc.categoryValues = CategoryValue.objects.filter(category=gdc.category)
     group = UserGroupProfile.objects.select_related('community').filter(user=request.user,community=gd.community)[0]
-    orders = Orders.objects.select_related('goods').filter(goods=Goods(id=goodsId))
+    orders = Orders.objects.select_related('goods').filter(goods=Goods(id=goodsId),groupProfile=group)
     for order in orders :
         order.categorys = OrderCategory.objects.select_related('categoryValue').filter(order=order)
     return render(request, 'detail.html',{'request':request,'group':group,'goods':gd,"categorys":gdCategorys,'orderGoods':orders})
