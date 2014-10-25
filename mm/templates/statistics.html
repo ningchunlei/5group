@@ -70,7 +70,7 @@
                                         <tr>
                                             <td>{{ y }}</td>
                                             {% for x in xAxis %}
-                                                <td><a class="statisticsTrigger" data-x="{{ x }}" data-y="{{ y }}"  href="#"  id="grid{{ count.inc }}">{{ hMap|get_item:y|get_item:x|orderlen }}</a></td>
+                                                <td><a class="statisticsTrigger" data-x="{{ x }}" data-y="{{ y }}"  style="cursor:pointer" id="grid{{ count.inc }}">{{ hMap|get_item:y|get_item:x|orderlen }}</a></td>
                                             {% endfor %}
                                         </tr>
                                     {% endfor %}
@@ -249,8 +249,6 @@
              $(".statisticsTrigger").click(function(e){
                 var x = $(this).data("x")
                 var y = $(this).data("y")
-                 console.log(x)
-                 console.log(y)
                  try{
                     $('#statistics_group_dialog .modal-body tbody').empty()
                     var s = ""
@@ -259,10 +257,26 @@
                         t = orderJson[y][x][i]
                         s =  s + "<tr><td>"+t.id+"</td><td>"+t.groupProfile.nick+"</td><td>"+t.number+"</td>"
                         if (isOwner)
-                            s = s + "<td><a href='/order/mdelete/"+ t.id +"'>删除</a></td><td><a href='#' data-id='"+t.id+"' data-number='"+ t.number +"' class='modifyNumber' >修改数量</a></td>"
+                            s = s + "<td><a data-trigger='click' data-placement='left' title='删除订单?' class='confirm btn btn-large btn-danger' data-href='/order/mdelete/"+ t.id +"'>删除</a></td><td><a href='#' data-id='"+t.id+"' data-number='"+ t.number +"' class='modifyNumber' >修改数量</a></td>"
                         s = s +"</tr>"
                     }
                     $('#statistics_group_dialog .modal-body tbody').append(s)
+
+
+                    $('.confirm').click(function(e){
+                        e.preventDefault()
+                        $(this).unbind('click')
+                        $('.confirm').popover({
+                            content:'<div class="btn-group"><a class="btn btn-small btn-primary" href="'+$(this).data('href')+'" target="_self"><i class="glyphicon glyphicon-ok-sign "></i>是</a><a class="btn btn-small btn-no"><i class="glyphicon glyphicon-remove-sign"></i>否</a></div>',
+                            html:true
+                        }).on('shown.bs.popover', function () {
+                          $('.btn-no').click(function(e){
+                            $('.confirm').popover('hide')
+                          })
+                        })
+                        $(this).popover('show')
+
+                    })
 
                     $("#statistics_group_dialog .modifyNumber").click(function(e){
                         var orderId = $(this).data("id")
