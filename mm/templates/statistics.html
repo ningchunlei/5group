@@ -197,7 +197,7 @@
        {% autoescape off %}
             var orderJson = {{ jsonOrder }};
        {% endautoescape %}
-       var isOwner = {% if item.goods.community.user.id == request.user.id or item.groupProfile.user.id == request.user.id %} true {% endif %}
+       var isOwner = {% if item.goods.community.user.id == request.user.id or item.groupProfile.user.id == request.user.id %} true {% else %} false {% endif %}
        $(document).ready(function() {
         $('#order-form')
             .bootstrapValidator({
@@ -269,8 +269,8 @@
                         var number = $(this).data("number")
                         $("#community-form").attr("action","/order/modifynum/"+orderId)
                         $("#community-form input[name='n']").val(number)
-                         $('#statistics_group_dialog').modal('hide')
-                        $('#add_group_dialog').modal('show')
+                        $('#statistics_group_dialog').modal('hide')
+                        $('#modify_number_dialog').modal('show')
                     });
                     $('#statistics_group_dialog').modal('show')
                  }catch (err){
