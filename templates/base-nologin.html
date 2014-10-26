@@ -50,27 +50,25 @@
                 <li><a href="/">群组</a></li>
                 <li><a href="/latest">最新团品</a></li>
                 {% if request.user.is_authenticated %}<li><a href="/manage">个人中心</a></li>{% endif %}
-                <li class="dropdown navbar-right">
+
+
                     {% if request.user.is_authenticated %}
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{ socialuser }} <b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a href="/user/register"><i class="fa fa-fw fa-user"></i><img src="{{ socialuser.getImage }}"/></a>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
+                                 <li class="navbar-right">
                                     <form id="logout-form" action="/disconnect/{{socialuser.provider }}/" method="post">
                                         {% csrf_token %}
                                     </form>
                                     <a href="#" id="logout-link"><i class="fa fa-fw fa-power-off"></i> 退出</a>
                                 </li>
-                            </ul>
+
+                <li class="navbar-right">
+                                    <a href="/user/register"><i class="fa fa-fw fa-user"></i>{{ socialuser }}</a>
+                                </li>
                     {% else %}
                          <li>
                           <a href="#user_login_dialog" data-toggle="modal" data-target="#user_login_dialog"><i class="fa fa-user"></i>登录</a>
                          </li>
                     {% endif %}
-                </li>
+
 
             </ul>
             <!-- /.navbar-collapse -->
