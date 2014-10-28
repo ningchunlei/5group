@@ -22,11 +22,11 @@ from django.core import serializers
 # Create your views here.
 
 def index(request):
-    communitys = Community.objects.select_related('user').all()
+    communitys = Community.objects.select_related('user').all().order_by('-time')
     for x in communitys:
         x.user.socialUser = x.user.social_auth.model.objects.get(user=x.user)
         x.user.groupProfile = UserGroupProfile.objects.get(user=x.user,community=x)
-    return render(request, 'index.html', {'request':request,'communitys':communitys})
+    return render(request, 'index.html', {'request':request,'communitys':communitys,'groupTrigger':request.GET.get('id',None)})
 
 def login(request):
     return render(request, 'login.html', {'request':request})
@@ -91,8 +91,8 @@ def join(request,communityId):
         groupProfile.community=Community(id=communityId)
         groupProfile.nick= nick
         groupProfile.save()
-        return HttpResponseRedirect(redirect_to=reverse("mm:manage"))
-    return HttpResponseRedirect(redirect_to=reverse("mm:index"))
+
+    return HttpResponseRedirect(redirect_to=reverse("mm:manage"))
 
 
 def checknick(request,communityId):
@@ -137,7 +137,7 @@ def addcommunity(request):
 
         community = Community()
         community.user = request.user
-        community.code = uuid4().hex
+        community.code = request.POST["code"]
         community.number = request.POST["number"]
         community.name = request.POST["community"]
         community.save()
@@ -219,8 +219,11 @@ def detailGoods(request,goodsId):
     gdCategorys = GoodsCategory.objects.select_related('category').filter(product=gd)
     for gdc in gdCategorys:
         gdc.categoryValues = CategoryValue.objects.filter(category=gdc.category)
-    group = UserGroupProfile.objects.select_related('community').filter(user=request.user,community=gd.community)[0]
-    orders = Orders.objects.select_related('goods').filter(goods=Goods(id=goodsId))
+    try:
+        group = UserGroupProfile.objects.select_related('community').filter(user=request.user,community=gd.community)[0]
+    except:
+        return HttpResponseRedirect(redirect_to='/?id='+str(gd.community.id))
+    orders = Orders.objects.select_related('goods').filter(goods=Goods(id=goodsId),groupProfile=group)
     for order in orders :
         order.categorys = OrderCategory.objects.select_related('categoryValue').filter(order=order)
     return render(request, 'detail.html',{'request':request,'group':group,'goods':gd,"categorys":gdCategorys,'orderGoods':orders})

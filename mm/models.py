@@ -11,6 +11,12 @@ class Community(models.Model):
     number = models.CharField(max_length=100,default="",unique=True)
     time = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.name;
+
+    def __unicode__(self):
+        return self.name
+
 class UserGroupProfile(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     community = models.ForeignKey(Community)
@@ -19,6 +25,8 @@ class UserGroupProfile(models.Model):
     class Meta:
         unique_together = (('user', 'community',),('nick', 'community',),)
 
+    def __unicode__(self):
+        return self.nick
 
 class Goods(models.Model):
     name = models.CharField(max_length=100)

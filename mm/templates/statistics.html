@@ -70,7 +70,7 @@
                                         <tr>
                                             <td>{{ y }}</td>
                                             {% for x in xAxis %}
-                                                <td><a class="statisticsTrigger" data-x="{{ x }}" data-y="{{ y }}"  href="#"  id="grid{{ count.inc }}">{{ hMap|get_item:y|get_item:x|orderlen }}</a></td>
+                                                <td><a class="statisticsTrigger" data-x="{{ x }}" data-y="{{ y }}"  style="cursor:pointer" id="grid{{ count.inc }}">{{ hMap|get_item:y|get_item:x|orderlen }}</a></td>
                                             {% endfor %}
                                         </tr>
                                     {% endfor %}
@@ -126,12 +126,12 @@
                     </div>
                 </div>
 
-    <div class="modal fade" id="add_group_dialog" tabindex="-1" role="dialog" aria-labelledby="add_group_dialog_label" aria-hidden="true">
+    <div class="modal fade" id="modify_number_dialog" tabindex="-1" role="dialog" aria-labelledby="modify_number_dialog_label" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="add_group_dialog_label">修改数量</h4>
+            <h4 class="modal-title" id="modify_number_dialog_label">修改数量</h4>
           </div>
           <div class="modal-body">
             <form id="community-form" method="post" action="" class="form-horizontal">
@@ -197,7 +197,7 @@
        {% autoescape off %}
             var orderJson = {{ jsonOrder }};
        {% endautoescape %}
-       var isOwner = {% if item.goods.community.user.id == request.user.id or item.groupProfile.user.id == request.user.id %} true {% endif %}
+       var isOwner = {% if goods.community.user.id == request.user.id or goods.groupProfile.user.id == request.user.id %} true {% else %} false {% endif %}
        $(document).ready(function() {
         $('#order-form')
             .bootstrapValidator({
@@ -249,28 +249,42 @@
              $(".statisticsTrigger").click(function(e){
                 var x = $(this).data("x")
                 var y = $(this).data("y")
-                 console.log(x)
-                 console.log(y)
                  try{
                     $('#statistics_group_dialog .modal-body tbody').empty()
                     var s = ""
                     for(i in orderJson[y][x])
                     {
                         t = orderJson[y][x][i]
-                        s =  "<tr><td>"+t.id+"</td><td>"+t.groupProfile.nick+"</td><td>"+t.number+"</td>"
+                        s =  s + "<tr><td>"+t.id+"</td><td>"+t.groupProfile.nick+"</td><td>"+t.number+"</td>"
                         if (isOwner)
-                            s = s + "<td><a href='/order/mdelete/"+ t.id +"'>删除</a></td><td><a href='#' data-id='"+t.id+"' data-number='"+ t.number +"' class='modifyNumber' >修改数量</a></td>"
+                            s = s + "<td><a data-trigger='click' data-placement='left' title='删除订单?' class='confirm btn btn-large btn-danger' data-href='/order/mdelete/"+ t.id +"'>删除</a></td><td><a href='#' data-id='"+t.id+"' data-number='"+ t.number +"' class='modifyNumber' >修改数量</a></td>"
                         s = s +"</tr>"
                     }
                     $('#statistics_group_dialog .modal-body tbody').append(s)
+
+
+                    $('.confirm').click(function(e){
+                        e.preventDefault()
+                        $(this).unbind('click')
+                        $('.confirm').popover({
+                            content:'<div class="btn-group"><a class="btn btn-small btn-primary" href="'+$(this).data('href')+'" target="_self"><i class="glyphicon glyphicon-ok-sign "></i>是</a><a class="btn btn-small btn-no"><i class="glyphicon glyphicon-remove-sign"></i>否</a></div>',
+                            html:true
+                        }).on('shown.bs.popover', function () {
+                          $('.btn-no').click(function(e){
+                            $('.confirm').popover('hide')
+                          })
+                        })
+                        $(this).popover('show')
+
+                    })
 
                     $("#statistics_group_dialog .modifyNumber").click(function(e){
                         var orderId = $(this).data("id")
                         var number = $(this).data("number")
                         $("#community-form").attr("action","/order/modifynum/"+orderId)
                         $("#community-form input[name='n']").val(number)
-                         $('#statistics_group_dialog').modal('hide')
-                        $('#add_group_dialog').modal('show')
+                        $('#statistics_group_dialog').modal('hide')
+                        $('#modify_number_dialog').modal('show')
                     });
                     $('#statistics_group_dialog').modal('show')
                  }catch (err){

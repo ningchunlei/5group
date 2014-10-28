@@ -37,27 +37,25 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-              <img width="40px" src="/static/img/logo.png"/>
+
             </div>
             <!-- Top Menu Items -->
             <ul class="nav top-nav">
                 <li><a href="/">群组</a></li>
                 <li><a href="/latest">最新团品</a></li>
-                <li class="dropdown navbar-right">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{ socialuser }} <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                       <li>
-                            <a href="/user/register"><i class="fa fa-fw fa-user"></i><img src="{{ socialuser.getImage }}"/></a>
-                        </li>
-                        <li class="divider"></li>
-                        <li>
-                            <form id="logout-form" action="/disconnect/{{socialuser.provider }}/" method="post">
-                                {% csrf_token %}
-                            </form>
-                            <a href="#" id="logout-link"><i class="fa fa-fw fa-power-off"></i>退出</a>
-                        </li>
-                    </ul>
-                </li>
+
+                 <li class="navbar-right">
+                                    <form id="logout-form" action="/disconnect/{{socialuser.provider }}/" method="post">
+                                        {% csrf_token %}
+                                    </form>
+                                    <a href="#" id="logout-link"><i class="fa fa-fw fa-power-off"></i> 退出</a>
+                                </li>
+
+                <li class="navbar-right">
+                                    <a href="/user/register"><i class="fa fa-fw fa-user"></i>{{ socialuser }}</a>
+                                </li>
+
+
                 <li class="navbar-right"><a href="#add_group_dialog" data-toggle="modal" data-target="#add_group_dialog"><i class="fa fa-plus-square"> 新建群组 </i></a></li>
             </ul>
             <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
@@ -95,7 +93,7 @@
             <h4 class="modal-title" id="add_group_dialog_label">新建群组</h4>
           </div>
           <div class="modal-body">
-            <form id="community-form" method="post" action="/community/add/" class="form-horizontal">
+            <form id="add-community-form" method="post" action="/community/add/" class="form-horizontal">
                 {% csrf_token %}
                 <div class="form-group">
                     <label class="col-md-3 control-label">群名</label>
@@ -106,7 +104,7 @@
                 <div class="form-group">
                     <label class="col-md-3 control-label">群号</label>
                     <div class="col-md-5">
-                        <input type="text" class="form-control" name="number" />
+                        <input type="text" class="form-control" name="number"  placeholder="QQ群号码"/>
                     </div>
                 </div>
 
@@ -114,6 +112,13 @@
                     <label class="col-md-3 control-label">群昵称</label>
                     <div class="col-md-5">
                         <input type="text" class="form-control" name="nick" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-3 control-label">群暗号</label>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" name="code"  placeholder="加群需要的暗号"/>
                     </div>
                 </div>
 
@@ -143,7 +148,7 @@
                 $('#community-form').submit();
             });
 
-            $('#community-form').bootstrapValidator({
+            $('#add-community-form').bootstrapValidator({
                 feedbackIcons: {
                     valid: 'glyphicon glyphicon-ok',
                     invalid: 'glyphicon glyphicon-remove',
@@ -183,7 +188,15 @@
                                 message: '不能为空'
                             }
                         }
+                    },
+                     code :{
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            }
+                        }
                     }
+
 
                 }
             })
