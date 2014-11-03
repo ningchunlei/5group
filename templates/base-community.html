@@ -55,12 +55,21 @@
 									</div>
 								</a>
 								<ul class="dropdown-menu">
-									<li>
-										<a href="#">
+
+                                    <li>
+                                        <a href="#add_group_dialog" class="dropdown-toggle" data-toggle="modal" data-target="#add_group_dialog">
+                                            <i class="fa fa-plus-square"></i>
+                                            <span>新建群组 </span>
+										</a>
+									</li>
+
+                                    <li>
+										<a href="#modifyUserModal" class="dropdown-toggle" data-toggle="modal" data-target="#modifyUserModal">
 											<i class="fa fa-cog"></i>
 											<span>修改密码</span>
 										</a>
 									</li>
+
 									<li>
                                         <form id="logout-form" action="/disconnect/{{socialuser.provider }}/" method="post">
                                             {% csrf_token %}
@@ -139,12 +148,13 @@
           <h1 class="text-center">登录</h1>
       </div>
       <div class="modal-body">
-          <form class="sign-in-form col-md-12 center-block">
+          <form class="form col-md-12 center-block" method="post" action="/user/login/">
+              {% csrf_token %}
             <div class="form-group">
-              <input type="text" class="form-control input-lg" placeholder="用户名">
+              <input type="text" class="form-control input-lg" placeholder="用户名" name="username">
             </div>
             <div class="form-group">
-              <input type="password" class="form-control input-lg" placeholder="密码">
+              <input type="password" class="form-control input-lg" placeholder="密码" name="password">
             </div>
             <div class="form-group">
               <button class="btn btn-primary btn-lg btn-block">登录</button>
@@ -160,6 +170,73 @@
   </div>
 </div>
 
+<div id="modifyUserModal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+  <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h1 class="text-center">修改用户资料</h1>
+      </div>
+      <div class="modal-body">
+          <form class="form col-md-12 center-block" method="post" id="user-modify" action="/user/modify/">
+              {% csrf_token %}
+            <div class="form-group">
+              <input type="text" class="form-control input-lg" placeholder="用户名" name="name" value="{{ user }}">
+            </div>
+            <div class="form-group">
+              <input type="password" class="form-control input-lg" placeholder="密码" name="passwd" >
+            </div>
+            <div class="form-group">
+              <button class="btn btn-primary btn-lg btn-block">保存</button>
+            </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+          <div class="col-md-12">
+		  </div>
+      </div>
+  </div>
+  </div>
+</div>
+
+<div id="add_group_dialog" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+  <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h1 class="text-center">新建群组</h1>
+      </div>
+      <div class="modal-body">
+          <form class="form col-md-12 center-block" id="add-community-form" method="post" action="/community/add/">
+              {% csrf_token %}
+            <div class="form-group">
+              <input type="text" class="form-control input-lg" placeholder="群名" name="community" value="">
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-control input-lg" placeholder="QQ群号" name="number" >
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-control input-lg" placeholder="群昵称" name="nick" >
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-control input-lg" name="code"  placeholder="加群需要的暗号" >
+            </div>
+
+            <div class="form-group">
+              <button class="btn btn-primary btn-lg btn-block">保存</button>
+            </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+          <div class="col-md-12">
+		  </div>
+      </div>
+  </div>
+  </div>
+</div>
+
+
+
 <!--End Container-->
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <!--<script src="http://code.jquery.com/jquery.js"></script>-->
@@ -167,6 +244,8 @@
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="/static/js/bootstrap.min.js"></script>
 <!-- All functions for this theme + document.ready processing -->
+<script type="text/javascript" src="/static/js/bootstrapValidator.min.js"></script>
+
 <script src="/static/js/5group.js"></script>
 
  <script language="JavaScript">
@@ -174,6 +253,88 @@
         $('#logout-link').click(function() {
             $('#logout-form').submit();
         });
+
+        $('#user-modify').bootstrapValidator({
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    name :{
+                        trigger: 'blur',
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            remote: {
+                                message: '昵称存在了',
+                                url: '/user/check/'
+                            }
+                        }
+                    },
+                    passwd :{
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            }
+                        }
+                    }
+                }
+            });
+
+         $('#add-community-form').bootstrapValidator({
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    number: {
+                        trigger: 'blur',
+                        message: '群号存在了',
+                        validators: {
+                            // The validator will create an Ajax request
+                            // sending { username: 'its value' } to the back-end
+                            remote: {
+                                message: '群号存在了',
+                                url: '/community/check/'
+                            },
+
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            integer: {
+                                message: '输入数字'
+                            }
+
+                        }
+                    },
+                    community :{
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            }
+                        }
+                    },
+                     nick :{
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            }
+                        }
+                    },
+                     code :{
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            }
+                        }
+                    }
+
+
+                }
+            })
     });
 </script>
 
