@@ -78,7 +78,7 @@ def userGroupProfile(request):
         try:
             groupprofiles = UserGroupProfile.objects.select_related('community').filter(user=request.user)
         except:
-             groupprofiles = []
+            groupprofiles = []
     else:
         groupprofiles = []
     return {

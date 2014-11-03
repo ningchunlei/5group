@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="description" content="妈妈团,母婴团购,妈妈社交">
+    <title>{% block title %}圈子助手{% endblock %}</title>
+   <!-- Bootstrap -->
+   <!-- Bootstrap -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <!-- Custom Fonts -->
+
+    <link rel="stylesheet" href="/static/css/bootstrapValidator.min.css"/>
+    {% block style %}{% endblock %}
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+<body>
+<!--Start Header-->
+
+<header class="navbar">
+	<div class="container-fluid expanded-panel">
+		<div class="row">
+			<div id="logo" class="col-xs-12 col-sm-2">
+				<a href="index.html">hello</a>
+			</div>
+			<div id="top-panel" class="col-xs-12 col-sm-10">
+				<div class="row">
+					<div class="col-xs-8 col-sm-4">
+						<a href="#" class="show-sidebar">
+						  <i class="fa fa-bars"></i>
+						</a>
+					</div>
+					<div class="col-xs-4 col-sm-8 top-panel-right">
+                        <ul class="nav navbar-nav pull-right panel-menu">
+                        {% if request.user.is_authenticated %}
+                            <li class="dropdown">
+								<a href="#" class="dropdown-toggle account" data-toggle="dropdown">
+									<div class="avatar">
+										<img src="{{ socialuser.getImage }}" class="img-rounded" alt="{{ socialuser }}" />
+									</div>
+									<i class="fa fa-angle-down pull-right"></i>
+									<div class="user-mini pull-right">
+										<span class="welcome">欢迎,</span>
+										<span>{{ socialuser }}</span>
+									</div>
+								</a>
+								<ul class="dropdown-menu">
+									<li>
+										<a href="#">
+											<i class="fa fa-cog"></i>
+											<span>修改密码</span>
+										</a>
+									</li>
+									<li>
+                                        <form id="logout-form" action="/disconnect/{{socialuser.provider }}/" method="post">
+                                            {% csrf_token %}
+                                        </form>
+										<a href="#" id="logout-link">
+											<i class="fa fa-power-off"></i>
+											<span>退出</span>
+										</a>
+									</li>
+								</ul>
+							</li>
+                        {% else %}
+							<li class="dropdown">
+								<a href="#loginModal" class="dropdown-toggle" data-toggle="modal" data-target="#loginModal">
+									<div class="user-mini pull-right" style="display: block">
+										<span>登录</span>
+									</div>
+								</a>
+							</li>
+                        {% endif %}
+                        </ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+<!--End Header-->
+<!--Start Container-->
+<div id="main" class="container-fluid">
+	<div class="row">
+		<div id="sidebar-left" class="col-xs-2 col-sm-2">
+			<ul class="nav main-menu">
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle">
+						<i class="fa fa-bar-chart-o"></i>
+						<span>Charts</span>
+					</a>
+					<ul class="dropdown-menu">
+						<li><a  href="ajax/charts_xcharts.html">xCharts</a></li>
+						<li><a  href="ajax/charts_flot.html">Flot Charts</a></li>
+						<li><a  href="ajax/charts_google.html">Google Charts</a></li>
+						<li><a  href="ajax/charts_morris.html">Morris Charts</a></li>
+						<li><a  href="ajax/charts_coindesk.html">CoinDesk realtime</a></li>
+					</ul>
+				</li>
+
+                <li class="dropdown">
+					<a href="#" class="dropdown-toggle">
+						<i class="fa fa-bar-chart-o"></i>
+						<span>Charts</span>
+					</a>
+					<ul class="dropdown-menu">
+						<li><a  href="ajax/charts_xcharts.html">xCharts</a></li>
+						<li><a  href="ajax/charts_flot.html">Flot Charts</a></li>
+						<li><a  href="ajax/charts_google.html">Google Charts</a></li>
+						<li><a  href="ajax/charts_morris.html">Morris Charts</a></li>
+						<li><a  href="ajax/charts_coindesk.html">CoinDesk realtime</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+		<!--Start Content-->
+		<div id="content" class="col-xs-12 col-sm-10">
+            {% block body %}{% endblock %}
+		</div>
+		<!--End Content-->
+	</div>
+</div>
+
+<div id="loginModal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+  <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h1 class="text-center">登录</h1>
+      </div>
+      <div class="modal-body">
+          <form class="sign-in-form col-md-12 center-block">
+            <div class="form-group">
+              <input type="text" class="form-control input-lg" placeholder="用户名">
+            </div>
+            <div class="form-group">
+              <input type="password" class="form-control input-lg" placeholder="密码">
+            </div>
+            <div class="form-group">
+              <button class="btn btn-primary btn-lg btn-block">登录</button>
+              <span class="pull-left"><a href="/login/qq/"><img src="/static/img/qq.png"/>登录</a></span>
+            </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+          <div class="col-md-12">
+		  </div>
+      </div>
+  </div>
+  </div>
+</div>
+
+<!--End Container-->
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<!--<script src="http://code.jquery.com/jquery.js"></script>-->
+<script src="/static/js/jquery-1.11.1.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/static/js/bootstrap.min.js"></script>
+<!-- All functions for this theme + document.ready processing -->
+<script src="/static/js/5group.js"></script>
+
+ <script language="JavaScript">
+    $(document).ready(function() {
+        $('#logout-link').click(function() {
+            $('#logout-form').submit();
+        });
+    });
+</script>
+
+{% block script %}{% endblock %}
+</body>
+</html>

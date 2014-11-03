@@ -22,11 +22,13 @@ from django.core import serializers
 # Create your views here.
 
 def index(request):
-    communitys = Community.objects.select_related('user').all().order_by('-time')
-    for x in communitys:
-        x.user.socialUser = x.user.social_auth.model.objects.get(user=x.user)
-        x.user.groupProfile = UserGroupProfile.objects.get(user=x.user,community=x)
-    return render(request, 'index.html', {'request':request,'communitys':communitys,'groupTrigger':request.GET.get('id',None)})
+    if not hasattr(request,'community') :
+        gd = Goods.objects.filter(~Q(status=2)).order_by('-time')
+        return render(request, 'index.html', {'request':request,'goods':gd})
+    else:
+        gd = Goods.objects.filter(~Q(status=2),community=request.community).order_by('-time')
+        return render(request,'communityIndex.html',{'request',request,'goods'.gd})
+
 
 def login(request):
     return render(request, 'login.html', {'request':request})
