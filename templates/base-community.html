@@ -1,3 +1,4 @@
+{% load tags %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -31,19 +32,44 @@
 	<div class="container-fluid expanded-panel">
 		<div class="row">
 			<div id="logo" class="col-xs-12 col-sm-2">
-				<a href="index.html">hello</a>
+				<a>{% block group %}Hello{% endblock %}</a>
 			</div>
 			<div id="top-panel" class="col-xs-12 col-sm-10">
 				<div class="row">
-					<div class="col-xs-8 col-sm-4">
+					<div class="col-xs-4 col-sm-4">
 						<a href="#" class="show-sidebar">
 						  <i class="fa fa-bars"></i>
 						</a>
 					</div>
-					<div class="col-xs-4 col-sm-8 top-panel-right">
+					<div class="col-xs-8 col-sm-8 top-panel-right">
                         <ul class="nav navbar-nav pull-right panel-menu">
                         {% if request.user.is_authenticated %}
-                            <li class="dropdown">
+                            {% if request.community  %}
+                            <li class="dropdown" style="display: inline-block">
+								<a href="#" class="dropdown-toggle account" data-toggle="dropdown">
+									<div class="pull-right" style="margin-top: 12px">
+										<span class="welcome">群组设置</span>
+									</div>
+                                    <i class="fa fa-cog pull-right"></i>
+								</a>
+								<ul class="dropdown-menu">
+                                    <li>
+                                        <a href="{% url 'mm:addgoods' group.community.number %}" class="dropdown-toggle">
+                                            <i class="fa fa-plus-square"></i>
+                                            <span>添加商品</span>
+										</a>
+									</li>
+
+                                    <li>
+                                        <a href="#modifyGroupNickModal" class="dropdown-toggle" data-toggle="modal" data-target="#modifyGroupNickModal">
+                                            <i class="fa fa-cog"></i>
+                                            <span>修改昵称</span>
+										</a>
+									</li>
+								</ul>
+							</li>
+                            {% endif %}
+                            <li class="dropdown" style="display: inline-block">
 								<a href="#" class="dropdown-toggle account" data-toggle="dropdown">
 									<div class="avatar">
 										<img src="{{ socialuser.getImage }}" class="img-rounded" alt="{{ socialuser }}" />
@@ -103,33 +129,15 @@
 	<div class="row">
 		<div id="sidebar-left" class="col-xs-2 col-sm-2">
 			<ul class="nav main-menu">
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle">
-						<i class="fa fa-bar-chart-o"></i>
-						<span>Charts</span>
-					</a>
-					<ul class="dropdown-menu">
-						<li><a  href="ajax/charts_xcharts.html">xCharts</a></li>
-						<li><a  href="ajax/charts_flot.html">Flot Charts</a></li>
-						<li><a  href="ajax/charts_google.html">Google Charts</a></li>
-						<li><a  href="ajax/charts_morris.html">Morris Charts</a></li>
-						<li><a  href="ajax/charts_coindesk.html">CoinDesk realtime</a></li>
-					</ul>
-				</li>
-
-                <li class="dropdown">
-					<a href="#" class="dropdown-toggle">
-						<i class="fa fa-bar-chart-o"></i>
-						<span>Charts</span>
-					</a>
-					<ul class="dropdown-menu">
-						<li><a  href="ajax/charts_xcharts.html">xCharts</a></li>
-						<li><a  href="ajax/charts_flot.html">Flot Charts</a></li>
-						<li><a  href="ajax/charts_google.html">Google Charts</a></li>
-						<li><a  href="ajax/charts_morris.html">Morris Charts</a></li>
-						<li><a  href="ajax/charts_coindesk.html">CoinDesk realtime</a></li>
-					</ul>
-				</li>
+                <li class="dropdown"><a class="dropdown-toggle"><i class="fa fa-arrow-down"></i><span>群组</span></a></li>
+                {% for profile in groupprofiles %}
+                    <li class="dropdown">
+                        <a href=" {{ profile.community.number|groupUrl:request }}" class="dropdown-toggle">
+                            <i class="fa fa-qq"></i>
+                            <span>{{ profile.community.name }}</span>
+                        </a>
+				    </li>
+                {% endfor %}
 			</ul>
 		</div>
 		<!--Start Content-->
@@ -157,7 +165,7 @@
               <input type="password" class="form-control input-lg" placeholder="密码" name="password">
             </div>
             <div class="form-group">
-              <button class="btn btn-primary btn-lg btn-block">登录</button>
+              <button type="submit" class="btn btn-primary btn-lg btn-block">登录</button>
               <span class="pull-left"><a href="/login/qq/"><img src="/static/img/qq.png"/>登录</a></span>
             </div>
           </form>
@@ -175,19 +183,42 @@
   <div class="modal-content">
       <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-          <h1 class="text-center">修改用户资料</h1>
+          <h1 class="text-center">修改密码</h1>
       </div>
       <div class="modal-body">
           <form class="form col-md-12 center-block" method="post" id="user-modify" action="/user/modify/">
               {% csrf_token %}
             <div class="form-group">
-              <input type="text" class="form-control input-lg" placeholder="用户名" name="name" value="{{ user }}">
-            </div>
-            <div class="form-group">
               <input type="password" class="form-control input-lg" placeholder="密码" name="passwd" >
             </div>
             <div class="form-group">
-              <button class="btn btn-primary btn-lg btn-block">保存</button>
+              <button type="submit" class="btn btn-primary btn-lg btn-block">保存</button>
+            </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+          <div class="col-md-12">
+		  </div>
+      </div>
+  </div>
+  </div>
+</div>
+
+<div id="modifyGroupNickModal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+  <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h1 class="text-center">修改昵称</h1>
+      </div>
+      <div class="modal-body">
+          <form class="form col-md-12 center-block" method="post" id="nick-form" action="/community/modify/nick/">
+              {% csrf_token %}
+            <div class="form-group">
+              <input type="text" class="form-control input-lg" placeholder="昵称" name="nick" value="{{ group.nick }}" >
+            </div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary btn-lg btn-block">保存</button>
             </div>
           </form>
       </div>
@@ -223,7 +254,7 @@
             </div>
 
             <div class="form-group">
-              <button class="btn btn-primary btn-lg btn-block">保存</button>
+              <button type="submit" class="btn btn-primary btn-lg btn-block">保存</button>
             </div>
           </form>
       </div>
@@ -261,18 +292,6 @@
                     validating: 'glyphicon glyphicon-refresh'
                 },
                 fields: {
-                    name :{
-                        trigger: 'blur',
-                        validators: {
-                            notEmpty: {
-                                message: '不能为空'
-                            },
-                            remote: {
-                                message: '昵称存在了',
-                                url: '/user/check/'
-                            }
-                        }
-                    },
                     passwd :{
                         validators: {
                             notEmpty: {
@@ -334,7 +353,46 @@
 
 
                 }
-            })
+            });
+
+         $('#nick-form')
+            .bootstrapValidator({
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    nick: {
+                        validators: {
+                            notEmpty: {
+                                message: ''
+                            },
+                             remote: {
+                                message: '群昵称存在了',
+                                url: '/community/{{ group.community.id }}/check'
+                            }
+                        }
+                    }
+                }
+            }).on('success.form.bv', function(e) {
+            // Prevent form submission
+                e.preventDefault();
+
+                // Get the form instance
+                var $form = $(e.target);
+
+                // Get the BootstrapValidator instance
+                var bv = $form.data('bootstrapValidator');
+
+                // Use Ajax to submit form data
+                $.post($form.attr('action'), $form.serialize(), function(result) {
+                    if(result.valid){
+                        alert("修改成功");
+                    }
+                    $('#modifyGroupNickModal').modal('hide')
+                }, 'json');
+            });
     });
 </script>
 

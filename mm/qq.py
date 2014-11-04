@@ -12,10 +12,10 @@ from django.conf import settings
 class QQOAuth2(BaseOAuth2):
     name = 'qq'
     ID_KEY = 'openid'
-    AUTHORIZE_URL = 'https://graph.qq.com/oauth2.0/authorize'
-    ACCESS_TOKEN_URL = 'https://graph.qq.com/oauth2.0/token'
-    AUTHORIZATION_URL = 'https://graph.qq.com/oauth2.0/authorize'
-    OPENID_URL = 'https://graph.qq.com/oauth2.0/me'
+    AUTHORIZE_URL = 'http://graph.qq.com/oauth2.0/authorize'
+    ACCESS_TOKEN_URL = 'http://graph.qq.com/oauth2.0/token'
+    AUTHORIZATION_URL = 'http://graph.qq.com/oauth2.0/authorize'
+    OPENID_URL = 'http://graph.qq.com/oauth2.0/me'
     REDIRECT_STATE = False
     EXTRA_DATA = [
         ('nickname', 'username'),
@@ -55,7 +55,7 @@ class QQOAuth2(BaseOAuth2):
     def user_data(self, access_token, *args, **kwargs):
         openid = self.get_openid(access_token)
         response = self.get_json(
-            'https://graph.qq.com/user/get_user_info', params={
+            'http://graph.qq.com/user/get_user_info', params={
                 'access_token': access_token,
                 'oauth_consumer_key': self.setting('SOCIAL_AUTH_QQ_KEY'),
                 'openid': openid
