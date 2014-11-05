@@ -27,7 +27,7 @@ def index(request):
         return render(request, 'index.html', {'request':request,'goods':gd})
     else:
         gd = Goods.objects.filter(~Q(status=2),community=request.community).order_by('-time')
-        return render(request,'communityIndex.html',{'request',request,'goods'.gd})
+        return render(request,'communityIndex.html',{'request':request,'goods':gd})
 
 
 def login(request):
@@ -77,9 +77,8 @@ def uploadImage(request):
 def userModify(request):
     user = User.objects.get(id=request.user.id)
     user.set_password(request.POST['passwd'])
-    user.username = request.POST['name']
     user.save()
-    return index(request)
+    return HttpResponseRedirect(redirect_to="/")
 
 @login_required(redirect_field_name=None,login_url="/login")
 @transaction.atomic
