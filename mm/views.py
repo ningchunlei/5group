@@ -106,8 +106,7 @@ def checknick(request,communityId):
 @login_required(redirect_field_name=None,login_url="/login")
 def comunityNick(request):
     nick = request.POST['nick']
-    id = request.POST['communityId']
-    group = UserGroupProfile.objects.filter(user=request.user,community=Community(id=id))[0]
+    group = UserGroupProfile.objects.filter(user=request.user,community=request.community)[0]
     group.nick= nick
     group.save()
     return HttpResponse(json.dumps({ "valid": True }),content_type='application/json; charset=utf8')
@@ -211,7 +210,7 @@ def savegoods(request):
         except:
             pass
         shutil.move("/www/tmp/"+fimg,"/www/image/"+str(request.user.id))
-    return HttpResponseRedirect(redirect_to=reverse("mm:usergroup",args=[params["communityId"]]))
+    return HttpResponseRedirect(redirect_to=reverse("mm:index"))
 
 @login_required(redirect_field_name=None,login_url="/login")
 def detailGoods(request,goodsId):
@@ -362,7 +361,7 @@ def freeze(request,goodsId):
     if gd.community.user.id == request.user.id or gd.groupProfile.user.id == request.user.id:
         gd.status=1
         gd.save()
-    return HttpResponseRedirect(redirect_to=reverse("mm:usergroup",args=[gd.community.number]))
+    return HttpResponseRedirect(redirect_to=reverse("mm:index"))
 
 @login_required(redirect_field_name=None,login_url="/login")
 def deleteGoods(request,goodsId):
@@ -370,7 +369,7 @@ def deleteGoods(request,goodsId):
     if gd.community.user.id == request.user.id or gd.groupProfile.user.id == request.user.id:
         gd.status=2
         gd.save()
-    return HttpResponseRedirect(redirect_to=reverse("mm:usergroup",args=[gd.community.number]))
+    return HttpResponseRedirect(redirect_to=reverse("mm:index"))
 
 def latest(request):
     gd = Goods.objects.filter(~Q(status=2)).order_by('-time')

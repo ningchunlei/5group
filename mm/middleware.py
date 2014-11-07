@@ -2,6 +2,10 @@ __author__ = 'jack'
 
 import re
 from models import Community,UserGroupProfile
+from django.http import HttpResponse,HttpResponseBadRequest,HttpResponseRedirect
+from django.core.urlresolvers import reverse
+
+from django.contrib.redirects.middleware import RedirectFallbackMiddleware
 
 class DomainMiddleWare(object):
     def process_request(self, request):
@@ -16,6 +20,14 @@ class DomainMiddleWare(object):
         if len(community)!=0:
             community[0].user.groupProfile = UserGroupProfile.objects.get(user=community[0].user,community=community[0])
             request.community = community[0]
+
+    def process_response(self, request, response):
+        if request.comunity != None and request.user.is_authenticated():
+            cs = UserGroupProfile.objects.get(user=request.user,community=request.comunity)
+            if len(cs)==0:
+                return HttpResponseRedirect(redirect_to=reverse('mm:join'))
+
+        return response
 
 
 

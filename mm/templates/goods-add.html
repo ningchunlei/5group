@@ -1,6 +1,8 @@
-{% extends "base.html" %}
+{% extends "base-community.html" %}
+{% load tags %}
+{% block group %}{{ request.community.name }}{% endblock %}
 {% block style %}
-    <style>
+<style>
 .fileinput-button {
   position: relative;
   overflow: hidden;
@@ -29,19 +31,7 @@
 
 {% block body %}
 <!-- Page Heading -->
-                <div class="row">
-                    <div class="col-lg-12">
-                        <h1 class="page-header">
-                          <small> 群名:{{ group.community.name }}</small>
-                        </h1>
-                        <ol class="breadcrumb">
-                            <li class="active">
-                                <i class="fa fa-info"></i> 群号: {{ group.community.number }} 暗号: {{ group.community.code }}
-                            </li>
-                        </ol>
-                    </div>
-                </div>
-                <div class="row">
+                <div class="row" style="margin-top: 10px">
                     <div class="col-lg-3" id="imgview">
 
                     </div>

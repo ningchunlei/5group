@@ -1,10 +1,10 @@
-{% extends "base-nologin.html" %}
-
-
+{% extends "base-community.html" %}
+{% load tags %}
+{% block group %}<a href="/">{{ request.community.name }}</a>{% endblock %}
 
 {% block body%}
 
-<div class="modal fade" id="add_group_dialog" tabindex="-1" role="dialog" aria-labelledby="add_group_dialog_label" aria-hidden="false">
+<div class="modal fade" id="join_group_dialog" tabindex="-1" role="dialog" aria-labelledby="join_group_dialog" aria-hidden="false">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -12,7 +12,7 @@
             <h4 class="modal-title" id="add_group_dialog_label">加入群</h4>
           </div>
           <div class="modal-body">
-            <form id="community-form" method="post" action="/community/join/" class="form-horizontal">
+            <form id="join-form" method="post" action="/community/join/{{ request.community.id }}" class="form-horizontal">
                 {% csrf_token %}
                 <div class="form-group">
                     <label class="col-md-3 control-label">暗号</label>
@@ -42,14 +42,7 @@
 
 <script language="JavaScript">
         $(document).ready(function() {
-            $(".community").click(function(){ // Click to only happen on announce links
-                $('#community-form').attr('action', "/community/join/"+$(this).data('id')); //this fails silently
-                $('#community-form').get(0).setAttribute('action',"/community/join/"+$(this).data('id')); //this works
-                $('#community-form').bootstrapValidator('updateOption', "nick",'remote','url','/community/'+$(this).data('id')+'/check/');
-                $('#add_group_dialog').modal('show');
-            });
-
-            $('#community-form').bootstrapValidator({
+            $('#join-form').bootstrapValidator({
                 feedbackIcons: {
                     valid: 'glyphicon glyphicon-ok',
                     invalid: 'glyphicon glyphicon-remove',
@@ -71,7 +64,7 @@
                             },
                             remote: {
                                 message: '昵称存在了',
-                                url: '/community/check/'
+                                url: '/community/check/{{ request.community.id }}'
                             }
 
                         }

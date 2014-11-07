@@ -143,7 +143,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/manage/'
+LOGIN_REDIRECT_URL = '/'
 URL_PATH = ''
 SOCIAL_AUTH_STRATEGY = 'social.strategies.django_strategy.DjangoStrategy'
 SOCIAL_AUTH_STORAGE = 'oauthdjango.models.DjangoStorage'
