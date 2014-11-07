@@ -4,7 +4,7 @@
 
 {% block body%}
 
-<div class="modal fade" id="join_group_dialog" tabindex="-1" role="dialog" aria-labelledby="join_group_dialog" aria-hidden="false">
+<div class="modal fade show" id="join_group_dialog" tabindex="-1" role="dialog" aria-labelledby="join_group_dialog" aria-hidden="false">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -42,6 +42,8 @@
 
 <script language="JavaScript">
         $(document).ready(function() {
+            $('#join_group_dialog').modal('show');
+
             $('#join-form').bootstrapValidator({
                 feedbackIcons: {
                     valid: 'glyphicon glyphicon-ok',
