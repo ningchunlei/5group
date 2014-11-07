@@ -22,7 +22,7 @@ class DomainMiddleWare(object):
             request.community = community[0]
 
     def process_response(self, request, response):
-        if request.comunity != None and request.user.is_authenticated():
+        if hasattr(request,"comunity") and request.user.is_authenticated():
             cs = UserGroupProfile.objects.get(user=request.user,community=request.comunity)
             if len(cs)==0:
                 return HttpResponseRedirect(redirect_to=reverse('mm:join'))
