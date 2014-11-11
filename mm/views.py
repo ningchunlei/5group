@@ -47,7 +47,7 @@ def userLogin(request):
     if user is not None:
         if user.is_active:
             authLogin(request, user)
-            return HttpResponseRedirect(redirect_to=reverse("mm:manage"))
+            return HttpResponseRedirect(redirect_to=reverse("mm:index"))
         else:
             return HttpResponseRedirect(redirect_to=reverse("mm:index"))
     else:
@@ -93,7 +93,7 @@ def join(request,communityId):
         groupProfile.nick= nick
         groupProfile.save()
 
-    return HttpResponseRedirect(redirect_to=reverse("mm:manage"))
+    return HttpResponseRedirect(redirect_to=reverse("mm:index"))
 
 
 def checknick(request,communityId):
@@ -148,7 +148,7 @@ def addcommunity(request):
         groupProfile.community=community
         groupProfile.nick= request.POST["nick"]
         groupProfile.save()
-        return HttpResponseRedirect(redirect_to="/manage")
+        return HttpResponseRedirect(redirect_to="/")
     else:
         return HttpResponseBadRequest()
 
