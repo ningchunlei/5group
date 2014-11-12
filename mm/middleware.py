@@ -23,7 +23,7 @@ class DomainMiddleWare(object):
             request.community = community[0]
             if hasattr(request,"user")!= None and request.user.is_authenticated():
                 cs = UserGroupProfile.objects.filter(user=request.user,community=request.community)
-                if len(cs)==0 and re.search('/community/check/',request.path)==None:
+                if len(cs)==0 and (re.search('/community/check/',request.path)==None or re.search('/community/join/',request.path)==None):
                     return  render(request,'joingroup.html',{'request':request})
 
 
