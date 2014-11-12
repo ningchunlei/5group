@@ -13,6 +13,7 @@
           </div>
           <div class="modal-body">
             <form id="join-form" method="post" action="/community/join/{{ request.community.id }}" class="form-horizontal">
+                {% csrf_token %}
                 <div class="form-group">
                     <label class="col-md-3 control-label">暗号</label>
                     <div class="col-md-5">

@@ -81,6 +81,7 @@ def userModify(request):
     return HttpResponseRedirect(redirect_to="/")
 
 @login_required(redirect_field_name=None,login_url="/login")
+@csrf_protect
 @transaction.atomic
 def join(request,communityId):
     nick = request.POST['nick']
