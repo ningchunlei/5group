@@ -24,7 +24,7 @@ class DomainMiddleWare(object):
             if hasattr(request,"user")!= None and request.user.is_authenticated():
                 cs = UserGroupProfile.objects.filter(user=request.user,community=request.community)
                 if len(cs)==0 and (re.search('/community/check/',request.path)==None and re.search('/community/join/',request.path)==None):
-                    return  render(request,'joingroup.html',{'request':request})
+                    return HttpResponseRedirect(redirect_to=reverse("mm:joingroup"))
 
 
 

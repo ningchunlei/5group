@@ -33,6 +33,10 @@ def index(request):
 def login(request):
     return render(request, 'login.html', {'request':request})
 
+
+def joingroup(request):
+    return render(request, 'joingroup.html', {'request':request})
+
 def userCheck(request):
     rs = User.objects.filter(username=request.GET['name']).count()
     if rs > 0 :
